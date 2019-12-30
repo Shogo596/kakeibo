@@ -1,0 +1,9 @@
+/* カレンダーオブジェクトを"inline-block"にして横幅の調整。*/
+.datetimepicker {
+    display: inline-block;
+}
+
+/* 入力オブジェクトの縦幅の調整 */
+#id_date, #id_classify, #id_name, #id_money {
+    height: 32px;
+}

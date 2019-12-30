@@ -1,0 +1,54 @@
+{% extends 'kakeibo/base.html' %}
+
+{% block content %}
+    <!-- 支出データ入力部 -->
+    <form action="/kakeibo/" method="post">
+        {% csrf_token %}
+        <!-- {{ form.as_table }} -->
+        <!--
+        {% for field in form %}
+            <div class="row">
+                <div class="col-md-6">{{ field.label_tag }}</div>
+                <div class="col-md-6">{{ field }}</div>
+            </div>
+        {% endfor %}
+        -->
+        <table class="table">
+            <tr class="datetimepicker">
+                <td>日付:<br/>{{ form.date }}</td>
+                <td>分類:<br/>{{ form.classify }}</td>
+                <td>項目名:<br/>{{ form.name }}</td>
+                <td>金額:<br/>{{ form.money }}</td>
+                <td><input type="submit" name="add" value="登録"></td>
+            </tr>
+        </table>
+    </form>
+
+
+    <!-- 支出データ一覧表示部 -->
+    <table class="table">
+        <tr>
+            <th>日付</th>
+            <th>分類</th>
+            <th>項目名</th>
+            <th>金額</th>
+            <th>削除</th>
+        </tr>
+        {% for detail in details %}
+        <tr>
+            <td>{{ detail.対象年月日 }}</td>
+<!--            <td>{{ detail.支出分類コード }}</td>-->
+            <td>{{ detail.支出分類コード.支出分類名 }}</td>
+            <td>{{ detail.項目名 }}</td>
+            <td>{{ detail.金額 }}</td>
+            <td>
+                <form action="/kakeibo/" method="post">
+                    {% csrf_token %}
+                    <input type="submit" name="delete" value="削除">
+                    <input type="hidden" name="id" value="{{ detail.id }}">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
