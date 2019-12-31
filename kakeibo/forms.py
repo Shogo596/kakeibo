@@ -38,3 +38,4 @@ class DetailForm(forms.Form):
     classify = forms.ChoiceField(widget=forms.Select, choices=classify_list, label='分類')
     name = forms.CharField(max_length=100, label='項目名')
     money = forms.IntegerField(label='金額')
+    is_tax = forms.BooleanField(widget=forms.CheckboxInput(), required=False, label='税')
