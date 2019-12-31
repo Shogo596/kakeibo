@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import 支出基本, 支出明細, 支出分類マスタ
+from .models import 支出明細, 支出分類マスタ
 from .forms import DetailForm
 # from django.utils import timezone
 from urllib.parse import urlencode
@@ -30,29 +30,41 @@ def view_list(request):
     if request.method == 'GET':
         data = request.GET  # 画面入力されたデータ
 
+        _date = data.get('date')
+        _classify = data.get('classify')
+
         # GETリクエストとして初期値が設定されている場合。（リダイレクトされてきた場合）
-        _date = ""
-        _classify = ""
-        if 'date' in data:
-            _date = data['date']
-        if'classify' in data:
-            _classify = data['classify']
-        set_initial_value(_date, _classify, initial_value_dict)
+        if _date is not None and _classify is not None:
+            set_initial_value(_date, _classify, initial_value_dict)
 
     # リクエストメソッドがPOSTの場合。
     # 登録ボタン押下時もしくは削除ボタン押下時。
     if request.method == 'POST':
-        data = request.POST  # 画面入力されたデータ
 
-        if 'add' in data:
-            add_row(data['date'], data['classify'], data['name'], data['money'])
-            redirect_url = get_url_view_list(data['date'], data['classify'])
-            return redirect(redirect_url)  # "render"でもいいかと思ったが、リダイレクトしないとブラウザ側で再読み込みを行った場合にフォームの再送信が発生する。
+        # 入力した値の取得。値の整形もしている。
+        request_data = request.POST  # 画面入力されたデータ
+        detail_form_data = DetailForm(request_data)  # 画面入力されたデータ
+        detail_form_data.is_valid()
+        cleaned_data = detail_form_data.cleaned_data
 
-        elif 'delete' in data:
-            delete_row(data['id'])
-            redirect_url = get_url_view_list("", "")
-            return redirect(redirect_url)
+        # 登録時に使用する項目
+        _date = cleaned_data.get('date')
+        _classify = cleaned_data.get('classify')
+        _name = cleaned_data.get('name')
+        _money = cleaned_data.get('money')
+        _is_tax = cleaned_data.get('tax')
+
+        # 削除時に使用する項目
+        _detail_id = request_data.get('id')
+
+        if 'add' in request_data:
+            add_row(_date, _classify, _name, _money, _is_tax)
+
+        elif 'delete' in request_data:
+            delete_row(_detail_id)
+
+        redirect_url = get_url_view_list(_date, _classify)
+        return redirect(redirect_url)  # "render"でもいいかと思ったが、リダイレクトしないとブラウザ側で再読み込みを行った場合にフォームの再送信が発生する。
 
     # 支出データ入力欄の設定を取得。その際に初期値データも送っている。
     form = DetailForm(initial=initial_value_dict)
@@ -67,23 +79,28 @@ def view_list(request):
     return render(request, 'kakeibo/view_list.html', context)
 
 
-def add_row(_date, _classify, _name, _money):
+def add_row(_date, _classify, _name, _money, _is_tax):
     """
     支出明細テーブルに画面入力された支出データを登録する。
     :param _date: 対象年月日
     :param _classify: 支出分類コード
     :param _name: 項目名
     :param _money: 金額
+    :param _is_tax: 税込計算するかどうか
     :return: なし。
     """
-    # DB的には日付は数値8桁のためリプレイス。
-    _date = _date.replace('-', '')
+    # DB的には日付は数値8桁のため整形。
+    _str_date = _date.strftime('%Y%m%d')
+
+    # 税込計算。入力された金額に税額を加える。
+    if _is_tax is True:
+        _money = _money * 1.1
 
     支出明細.objects.create(
-        対象年月日=_date,
+        対象年月日=_str_date,
         支出分類コード=支出分類マスタ.objects.get(支出分類コード=_classify),
         項目名=_name,
-        金額=int(_money),
+        金額=_money,
     )
 
 
@@ -112,7 +129,7 @@ def get_url_view_list(_date, _classify):
     """
     redirect_url = VIEW_LIST_URL
 
-    if _date == "" and _classify == "":
+    if _date is None and _classify is None:
         return redirect_url
 
     # GETリクエストとしてURLを作成する。

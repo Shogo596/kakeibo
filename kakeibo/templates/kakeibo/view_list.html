@@ -15,11 +15,32 @@
         -->
         <table class="table">
             <tr class="datetimepicker">
-                <td>日付:<br/>{{ form.date }}</td>
-                <td>分類:<br/>{{ form.classify }}</td>
-                <td>項目名:<br/>{{ form.name }}</td>
-                <td>金額:<br/>{{ form.money }}</td>
-                <td><input type="submit" name="add" value="登録"></td>
+                <td>
+                    日付:<br/>
+                    {{ form.date }}
+                </td>
+                <td>
+                    分類:<br/>
+                    {{ form.classify }}
+                </td>
+                <td>
+                    項目名:<br/>
+                    {{ form.name }}
+                </td>
+                <td>
+                    金額:<br/>
+                    {{ form.money }}
+                </td>
+                <td>
+                    <label title="税込計算する場合はチェック！">
+                        税<br/>
+                        <!--<input type="checkbox" name="tax" value="1">-->
+                        {{ form.tax }}
+                    </label>
+                </td>
+                <td>
+                    <input type="submit" name="add" value="登録">
+                </td>
             </tr>
         </table>
     </form>
