@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', include('blog.urls')),
     # path('blog/', include('blog.urls')),
-    path('kakeibo/', include('kakeibo.urls')),
+    path('', include('kakeibo.urls')),
+    # path('kakeibo/', include('kakeibo.urls')),
 ]
