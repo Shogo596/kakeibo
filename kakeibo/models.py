@@ -15,6 +15,7 @@ class 支出分類マスタ(models.Model):
     支出分類コード = models.CharField(primary_key=True, max_length=10, blank=True)
     支出分類名 = models.CharField(max_length=100, blank=True, null=True)
     固定変動区分 = models.CharField(max_length=1, blank=True, null=True)
+    対象者区別有無 = models.CharField(max_length=1, blank=True, null=True)
     表示順序 = models.IntegerField(blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
 
