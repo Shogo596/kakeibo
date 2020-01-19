@@ -1,0 +1,32 @@
+{% extends 'kakeibo/base.html' %}
+
+{% block content %}
+    <h2>例月支出登録画面</h2>
+    <!-- 支出データ一覧表示部 -->
+    <form action="/kakeibo/regist_regular_expense/" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+
+        <!-- formset利用時の固有記載 -->
+        {{ regular_data_list.management_form }}
+
+        <table class="table">
+            <tr>
+                <th>分類</th>
+                <th>金額</th>
+            </tr>
+            {% for form in regular_data_list %}
+            <tr>
+                <td>{{ form.form_name.value }}</td>
+                <td>{{ form.money }}</td>
+                {{ form.classify_code }}
+                {{ form.person_code }}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="pull-right"><input align="right" type="submit" name="regist" value="登録"></div>
+
+    </form>
+{% endblock %}

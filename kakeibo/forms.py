@@ -39,3 +39,13 @@ class DetailForm(forms.Form):
     name = forms.CharField(max_length=100, label='項目名')
     money = forms.IntegerField(label='金額')
     is_tax = forms.BooleanField(widget=forms.CheckboxInput(), required=False, label='税')
+
+
+class RegularForm(forms.Form):
+    form_name = forms.CharField(label='フォーム名', required=False)
+    classify_code = forms.CharField(max_length=10, label='支出分類コード', required=False, widget=forms.HiddenInput())
+    person_code = forms.CharField(max_length=10, label='対象者コード', required=False, widget=forms.HiddenInput())
+    money = forms.IntegerField(label='金額')
+
+
+RegularFormSet = forms.formset_factory(RegularForm, extra=0)

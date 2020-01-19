@@ -1,6 +1,7 @@
 {% extends 'kakeibo/base.html' %}
 
 {% block content %}
+    <h2>日別支出一覧画面</h2>
     <!-- 支出データ入力部 -->
     <form action="/kakeibo/" method="post">
         {% csrf_token %}
@@ -35,7 +36,7 @@
                     <label title="税込計算する場合はチェック！">
                         税<br/>
                         <!--<input type="checkbox" name="tax" value="1">-->
-                        {{ form.tax }}
+                        {{ form.is_tax }}
                     </label>
                 </td>
                 <td>
