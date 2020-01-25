@@ -55,7 +55,7 @@ def view_list(request):
         classify = cleaned_data.get('classify')
         name = cleaned_data.get('name')
         money = cleaned_data.get('money')
-        is_tax = cleaned_data.get('tax')
+        is_tax = cleaned_data.get('is_tax')
 
         # 削除時に使用する項目
         row_id = request_data.get('id')
@@ -92,15 +92,12 @@ def add_detail_row(date, classify, name, money, is_tax):
     :param is_tax: 税込計算するかどうか
     :return: なし。
     """
-    # DB的には日付は数値8桁のため整形。
-    str_date = date.strftime('%Y%m%d')
-
     # 税込計算。入力された金額に税額を加える。
     if is_tax is True:
         money = money * TAX
 
     支出明細.objects.create(
-        対象年月日=str_date,
+        対象年月日=date,
         支出分類コード=支出分類マスタ.objects.get(支出分類コード=classify),
         項目名=name,
         金額=money,

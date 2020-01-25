@@ -2,6 +2,20 @@
 
 {% block content %}
     <h2>例月支出登録画面</h2>
+    <!-- ページ移動部 -->
+    <form action="/kakeibo/regist_regular_expense/" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+
+        <div class="pull-right">
+            {{ YMForm.YYYYMM }}
+            <input type="submit" name="change" value="移動">
+            <input type="submit" name="back" value="前月">
+            <input type="submit" name="next" value="次月">
+        </div>
+    </form>
+
     <!-- 支出データ一覧表示部 -->
     <form action="/kakeibo/regist_regular_expense/" method="post">
 
@@ -20,13 +34,18 @@
             <tr>
                 <td>{{ form.form_name.value }}</td>
                 <td>{{ form.money }}</td>
+                {{ form.date }}
                 {{ form.classify_code }}
                 {{ form.person_code }}
             </tr>
             {% endfor %}
         </table>
 
-        <div class="pull-right"><input align="right" type="submit" name="regist" value="登録"></div>
+        <div class="pull-right">
+            <input type="submit" name="regist" value="登録">
+            /
+            <input type="submit" name="delete" value="削除">
+        </div>
 
     </form>
 {% endblock %}
