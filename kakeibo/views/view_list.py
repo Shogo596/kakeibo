@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from kakeibo.models import 支出明細, 支出分類マスタ
 from kakeibo.forms import DetailForm
-# from django.utils import timezone
 from urllib.parse import urlencode
+import kakeibo.views.kakeibo_util as util
 
 # 定数
 VIEW_LIST_URL = '/kakeibo/view_list/'
@@ -53,6 +53,7 @@ def view_list(request):
         # 登録時に使用する項目
         date = cleaned_data.get('date')
         classify = cleaned_data.get('classify')
+        person = '0000000000'
         name = cleaned_data.get('name')
         money = cleaned_data.get('money')
         is_tax = cleaned_data.get('is_tax')
@@ -61,10 +62,10 @@ def view_list(request):
         row_id = request_data.get('id')
 
         if 'add' in request_data:
-            add_detail_row(date, classify, name, money, is_tax)
+            util.add_upd_detail_row(date, classify, person, name, money, is_tax, upd_flg='0')
 
         elif 'delete' in request_data:
-            delete_detail_row(row_id)
+            util.delete_detail_row(row_id)
 
         redirect_url = get_url_view_list(date, classify)
         return redirect(redirect_url)  # "render"でもいいかと思ったが、リダイレクトしないとブラウザ側で再読み込みを行った場合にフォームの再送信が発生する。
@@ -80,44 +81,6 @@ def view_list(request):
 
     # 支出データ一覧画面の表示。"context"の内容をもとに"view_list.html"が表示される。
     return render(request, 'kakeibo/view_list.html', context)
-
-
-def add_detail_row(date, classify, name, money, is_tax):
-    """
-    支出明細テーブルに画面入力された支出データを登録する。
-    :param date: 対象年月日
-    :param classify: 支出分類コード
-    :param name: 項目名
-    :param money: 金額
-    :param is_tax: 税込計算するかどうか
-    :return: なし。
-    """
-    # 税込計算。入力された金額に税額を加える。
-    if is_tax is True:
-        money = money * TAX
-
-    支出明細.objects.create(
-        対象年月日=date,
-        支出分類コード=支出分類マスタ.objects.get(支出分類コード=classify),
-        項目名=name,
-        金額=money,
-    )
-
-
-def delete_detail_row(row_id):
-    """
-    支出明細テーブルから支出データレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
-    :param row_id: 削除ボタン押下時の行番号。
-    :return: なし。
-    """
-    # 物理削除はやめた。
-    # detail_id = data['id']
-    # 支出明細.objects.filter(id=detail_id).delete()
-
-    # 削除フラグを更新する。
-    detail_row = 支出明細.objects.filter(id=row_id).first()
-    detail_row.削除フラグ = '1'
-    detail_row.save()
 
 
 def get_url_view_list(date, classify):

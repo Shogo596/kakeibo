@@ -18,6 +18,7 @@ class 支出分類マスタ(models.Model):
     対象者区別有無 = models.CharField(max_length=1, blank=True, null=True)
     表示順序 = models.IntegerField(blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
+    objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
 
     def __str__(self):
         return str(self.支出分類コード)
@@ -31,6 +32,7 @@ class 対象者マスタ(models.Model):
     対象者名 = models.CharField(max_length=100, blank=True, null=True)
     表示順序 = models.IntegerField(blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
+    objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
 
     def __str__(self):
         return str(self.対象者コード)
@@ -50,6 +52,7 @@ class 定例支出マスタ(models.Model):
     作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
     更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
+    objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
 
     def __str__(self):
         return str(self.id)
@@ -70,6 +73,7 @@ class 支出基本(models.Model):
     作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
     更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
+    objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
 
     def __str__(self):
         return str(self.支出基本id)
@@ -88,6 +92,7 @@ class 支出明細(models.Model):
     作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
     更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
+    objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
 
     def __str__(self):
         return str(self.id)
