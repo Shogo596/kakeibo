@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
-from kakeibo.models import 支出明細, 支出分類マスタ, 対象者マスタ
-from kakeibo.forms import RegularForm, RegularFormSet, YMForm, DetailForm
+from django.shortcuts import render
+from kakeibo.models import 支出明細, 支出分類マスタ, 対象者マスタ, 定例支出マスタ
+from kakeibo.forms import RegularFormSet, YMForm, DetailForm
 from datetime import datetime
 from dateutil import relativedelta
 
@@ -41,7 +41,8 @@ def regist_regular_expense(request):
     # マスタデータと支出明細の取得
     classify_records = 支出分類マスタ.objects.filter(削除フラグ='0', 固定変動区分='0').order_by('表示順序')
     person_records = 対象者マスタ.objects.filter(削除フラグ='0').exclude(対象者コード='0000000000').order_by('表示順序')
-    regular_records = 支出明細.objects.filter(削除フラグ='0', 対象年月日__startswith=yyyymm, 支出分類コード__固定変動区分='0').order_by('id').reverse()
+    regular_records = 定例支出マスタ.objects.filter(削除フラグ='0', 開始年月__lte=yyyymm, 終了年月__gte=yyyymm)
+    detail_records = 支出明細.objects.filter(削除フラグ='0', 対象年月日__startswith=yyyymm, 支出分類コード__固定変動区分='0').order_by('id').reverse()
 
     if request.method == 'POST':
 
@@ -72,10 +73,10 @@ def regist_regular_expense(request):
         # 削除ボタン押下時処理
         if 'delete' in request.POST:
             # 画面表示している年月のデータを削除する。
-            delete_detail_rows(regular_records)
+            delete_detail_rows(detail_records)
 
     # 画面表示用の定例支出データの取得
-    regular_data_list = get_regular_data_list(classify_records, person_records, regular_records, yyyymm)
+    regular_data_list = get_regular_data_list(classify_records, person_records, regular_records, detail_records, yyyymm)
 
     # Templateに送るデータの作成。
     context = {
@@ -92,12 +93,13 @@ def regist_regular_expense(request):
     return render(request, 'kakeibo/regist_regular_expense.html', context)
 
 
-def get_regular_data_list(classify_records, person_records, regular_records, yyyymm):
+def get_regular_data_list(classify_records, person_records, regular_records, detail_records, yyyymm):
     """
     画面表示用の定例支出データの取得を返す。
     :param classify_records: 支出分類マスタ（固定変動区分＝固定費のみ）
     :param person_records: 対象者マスタ（対象者＝世帯全員は除く）
-    :param regular_records: 支出明細テーブルの固定費データ（特定年月データかつ固定変動区分＝固定費）
+    :param regular_records: 定例支出マスタ
+    :param detail_records: 支出明細テーブルの固定費データ（特定年月データかつ固定変動区分＝固定費）
     :param yyyymm: 対象年月
     :return: 画面表示用の定例支出データ（list型）
     """
@@ -107,65 +109,55 @@ def get_regular_data_list(classify_records, person_records, regular_records, yyy
     for classify_row in classify_records:
         for person_row in person_records:
 
+            # 画面表示する定例支出データの初期化
+            regular_form_data = RegularFormData()
+            regular_form_data.form_name = classify_row.支出分類名
+            regular_form_data.date = yyyymm + '00'
+            regular_form_data.classify = classify_row.支出分類コード
+            regular_form_data.person = '0000000000'
+            regular_form_data.money = 0
+
+            # 対象者区別有無が"1"だったら一部編集
+            person_umu_flg = classify_row.対象者区別有無
+            if person_umu_flg == '1':
+                regular_form_data.form_name = classify_row.支出分類名 + '（' + person_row.対象者名 + '）'
+                regular_form_data.person = person_row.対象者コード
+
+            # 対象の定例支出項目がすでに支出明細テーブルに存在する場合は取得。対象年月日と金額を取得する。
+            detail_row = detail_records.filter(支出分類コード=regular_form_data.classify, 対象者コード=regular_form_data.person).first()
+
+            # 支出明細テーブルから行取得できたか判定。取得できたら以下取得。
+            # できない場合、定例支出マスタにレコードがあれば金額を取得する。
+            if detail_row is not None:
+                regular_form_data.date = detail_row.対象年月日
+                regular_form_data.money = detail_row.金額
+            else:
+                # 定例支出マスタから取得
+                regular_rows = regular_records.filter(支出分類コード=regular_form_data.classify, 対象者コード=regular_form_data.person)
+
+                # 定例支出マスタに複数金額が存在する場合はすべて合算。
+                for regular_row in regular_rows:
+
+                    # 有効月のチェックをして対象であれば金額を取得。
+                    int_mm = int(yyyymm[4:])
+                    if regular_row.有効月[int_mm - 1] == '1':
+                        regular_form_data.money += regular_row.金額
+
+            # 画面初期表示用にハッシュ化してListに突っ込む。
             regular_data = {
-                'form_name': '',
-                'date': '',
-                'classify_code': '',
-                'person_code': '',
-                'money': 0,
+                'form_name': regular_form_data.form_name,
+                'date': regular_form_data.date,
+                'classify_code': regular_form_data.classify,
+                'person_code': regular_form_data.person,
+                'money': regular_form_data.money
             }
-
-            if classify_row.対象者区別有無 != '1':
-                detail_data = get_detail_data(regular_records, classify_row.支出分類コード, '0000000000', yyyymm)
-
-                regular_data['form_name'] = classify_row.支出分類名
-                regular_data['date'] = detail_data.date
-                regular_data['classify_code'] = detail_data.classify
-                regular_data['person_code'] = detail_data.person
-                regular_data['money'] = detail_data.money
-
-                result.append(regular_data)
-                break
-
-            detail_data = get_detail_data(regular_records, classify_row.支出分類コード, person_row.対象者コード, yyyymm)
-
-            regular_data['form_name'] = classify_row.支出分類名 + '（' + person_row.対象者名 + '）'
-            regular_data['date'] = detail_data.date
-            regular_data['classify_code'] = detail_data.classify
-            regular_data['person_code'] = detail_data.person
-            regular_data['money'] = detail_data.money
-
             result.append(regular_data)
 
+            # 対象者区別有無が'1'じゃない場合は対象者が"世帯全員"のみなので対象者レコードのループは終わり。
+            if person_umu_flg != '1':
+                break
+
     return result
-
-
-def get_detail_data(regular_records, classify, person, yyyymm):
-    """
-    支出明細テーブルから金額を取得する。
-    :param regular_records: 支出明細テーブル
-    :param classify: 支出分類コード
-    :param person: 対象者コード
-    :return: 上記パラメータに紐づく明細データの金額
-    """
-
-    # 支出明細オブジェクトの初期化
-    detail_data = DetailForm()
-    detail_data.date = yyyymm + '00'
-    detail_data.classify = classify
-    detail_data.person = person
-    detail_data.money = 0
-
-    # 支出明細テーブルから取得
-    detail_row = regular_records.filter(支出分類コード=classify, 対象者コード=person).first()
-
-    # 行取得できたか判定
-    if detail_row is not None:
-        # 支出明細オブジェクトの更新
-        detail_data.date = detail_row.対象年月日
-        detail_data.money = detail_row.金額
-
-    return detail_data
 
 
 def add_upd_detail_row(date, classify, person, name, money, is_tax):
@@ -196,14 +188,14 @@ def add_upd_detail_row(date, classify, person, name, money, is_tax):
     )
 
 
-def delete_detail_rows(regular_records):
+def delete_detail_rows(detail_records):
     """
     支出明細テーブルから支出データレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
-    :param regular_records: 支出明細テーブル。削除対象データのみ。
+    :param detail_records: 支出明細テーブル。削除対象データのみ。
     :return: なし。
     """
     # 削除フラグを更新する。
-    regular_records.update(削除フラグ='1')
+    detail_records.update(削除フラグ='1')
 
 
 def calc_date(date, addyear, addmonth, addday):
@@ -241,5 +233,11 @@ def calc_date(date, addyear, addmonth, addday):
     return result
 
 
+class RegularFormData:
+    form_name = ''
+    date = ''
+    classify_code = ''
+    person_code = ''
+    money = 0
 
 
