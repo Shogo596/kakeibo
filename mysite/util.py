@@ -1,7 +1,6 @@
 from dateutil import relativedelta
 from datetime import datetime
 
-
 def calc_date(date, addyear, addmonth, addday):
     """
     日付計算

@@ -1,0 +1,93 @@
+{% extends 'kakeibo/base.html' %}
+
+{% block content %}
+    <h2>カード支出登録画面</h2>
+    <!-- ページ移動部 -->
+    <form action="/kakeibo/credit_card_regist/" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="trans_page">
+
+        <div class="float-right">
+            {{ ymform.YYYYMM }}
+            <input type="submit" name="change" value="移動">
+            <input type="submit" name="back" value="前月">
+            <input type="submit" name="next" value="次月">
+        </div>
+    </form>
+
+    <hr/>
+
+    <!-- ファイル取込部 -->
+    <form action="{% url 'Kakeibo:credit_card_regist' %}" method="post" enctype="multipart/form-data">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="import_file">
+
+        <div class="float-right">
+            <div class="file_import">
+                <!-- csvファイルの取り込み部は普通に作ると味気ないので"input-group"を利用してちょっとリッチにする -->
+                <input id="csvfile" type="file" accept=".csv" name="csvfile" style="display:none">
+                <div class="input-group">
+                    <input type="text" id="csvfileCover" class="form-control" autocomplete="off" placeholder="csvファイルを選択...">
+                    <span class="input-group-btn"><button type="button" class="btn btn-info" onclick="$('input[id=csvfile]').click();">選択</button></span>
+                    <!-- <span class="input-group-btn"><button type="button" class="btn btn-info" onclick="$('input[id=csvfile]').click();"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button></span> -->
+                    <span class="input-group-btn"><button type="submit" class="btn btn-info" name="import" value="取込">取込</button></span>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 取込カードデータ表示部 -->
+    <form action="{% url 'Kakeibo:credit_card_regist' %}" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="regist_card_data">
+
+        <!-- formset利用時の固有記載 -->
+        {{ card_formset.management_form }}
+
+        <table class="table">
+            <tr>
+                <th>日付</th>
+                <th>店名</th>
+                <th>金額</th>
+                <th>分類</th>
+                <th>備考</th>
+                <th>削除</th>
+            </tr>
+            {% for form in card_formset %}
+            <tr>
+                <td>{{ form.use_date.value }}</td>
+                <td>{{ form.shop_name.value }}</td>
+                <td>{{ form.money.value }}</td>
+                <td>{{ form.classify_person }}</td>
+                <td>{{ form.remarks }}</td>
+                <td>{{ form.delete }}</td>
+                {{ form.row_id }}
+                {{ form.payment_month }}
+                {{ form.use_date }}
+                {{ form.shop_name }}
+                {{ form.money }}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="pull-right">
+            <input type="submit" name="regist" value="登録">
+        </div>
+
+    </form>
+
+<!-- 上記でのcsvファイル取込部で使うjavascript。画面表示用のtextボックスからsubmit用のfileボックスに転送する。-->
+<script>
+  $('input[id=csvfile]').change(function() {
+    $('#csvfileCover').val($(this).val().replace("C:\\fakepath\\", ""));
+  });
+</script>
+
+{% endblock %}
+

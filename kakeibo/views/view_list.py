@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
-from kakeibo.models import 支出明細, 支出分類マスタ
+from kakeibo.models import 支出明細
 from kakeibo.forms import DetailForm
 from urllib.parse import urlencode
-import kakeibo.views.kakeibo_util as util
+import kakeibo.util.kakeibo_util as util
 
 # 定数
 VIEW_LIST_URL = '/kakeibo/view_list/'
-TAX = 1.1
 
 
 def view_list(request):
@@ -110,5 +109,3 @@ def set_initial_value(date, classify, initial_value_dict):
     """
     initial_value_dict['date'] = date
     initial_value_dict['classify'] = classify
-
-

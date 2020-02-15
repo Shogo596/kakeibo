@@ -1,7 +1,8 @@
 from django import forms
-from .models import 支出基本, 支出明細, 支出分類マスタ, 対象者マスタ
+from .models import 支出分類マスタ, 対象者マスタ
 # from django.contrib.admin.widgets import AdminDateWidget
 import bootstrap_datepicker_plus as datetimepicker
+import kakeibo.util.kakeibo_util as util
 
 
 ######################################################
@@ -60,3 +61,21 @@ RegularFormSet = forms.formset_factory(RegularForm, extra=0)
 
 class YMForm(forms.Form):
     YYYYMM = forms.CharField(max_length=6, label='年月')
+
+
+class CardForm(forms.Form):
+    classify_person_combobox = util.get_classify_person_combobox(kotei_hendo_kubun='')
+
+    row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())
+    payment_month = forms.CharField(label='支払月', max_length=6, required=False, widget=forms.HiddenInput())
+    use_date = forms.CharField(label='利用年月日', max_length=8, required=False, widget=forms.HiddenInput())
+    shop_name = forms.CharField(label='店名', max_length=100, required=False, widget=forms.HiddenInput())
+    money = forms.IntegerField(label='金額', required=False, widget=forms.HiddenInput())
+    # memo:↓必須制御をかけると画面から取得した場合にkey errorになる。
+    classify_person = forms.ChoiceField(label='支出分類_対象者',
+                                        required=False, widget=forms.Select, choices=classify_person_combobox)
+    remarks = forms.CharField(label='支出分類コード', max_length=100, required=False)
+    delete = forms.BooleanField(label='削除', required=False, widget=forms.CheckboxInput())
+
+
+CardFormSet = forms.formset_factory(CardForm, extra=0)

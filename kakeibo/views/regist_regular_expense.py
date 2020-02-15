@@ -1,8 +1,12 @@
+# 標準ライブラリ
 from django.shortcuts import render
+from datetime import datetime
+
+# 独自ライブラリ
 from kakeibo.models import 支出明細, 支出分類マスタ, 対象者マスタ, 定例支出マスタ
 from kakeibo.forms import RegularFormSet, YMForm
-from datetime import datetime
-import kakeibo.views.kakeibo_util as util
+import kakeibo.util.kakeibo_util as util
+import mysite.util as base_util
 
 
 def regist_regular_expense(request):
@@ -31,11 +35,11 @@ def regist_regular_expense(request):
 
         # 次月ボタン押下時処理
         if 'next' in request.POST:
-            yyyymm = util.calc_date(yyyymm, 0, 1, 0)
+            yyyymm = base_util.calc_date(yyyymm, 0, 1, 0)
 
         # 前月ボタン押下時処理
         if 'back' in request.POST:
-            yyyymm = util.calc_date(yyyymm, 0, -1, 0)
+            yyyymm = base_util.calc_date(yyyymm, 0, -1, 0)
 
     # マスタデータと支出明細の取得
     classify_records = 支出分類マスタ.objects.filter(削除フラグ='0', 固定変動区分='0').order_by('表示順序')

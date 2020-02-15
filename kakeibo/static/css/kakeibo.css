@@ -7,3 +7,7 @@
 #id_date, #id_classify, #id_name, #id_money {
     height: 32px;
 }
+
+.file_import {
+    display: inline-flex;
+}

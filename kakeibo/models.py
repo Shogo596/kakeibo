@@ -23,6 +23,10 @@ class 支出分類マスタ(models.Model):
     def __str__(self):
         return str(self.支出分類コード)
 
+    @staticmethod
+    def get_row(classify_code):
+        return 支出分類マスタ.objects.get(支出分類コード=classify_code)
+
 
 class 対象者マスタ(models.Model):
     """
@@ -36,6 +40,14 @@ class 対象者マスタ(models.Model):
 
     def __str__(self):
         return str(self.対象者コード)
+
+    @staticmethod
+    def get_row(person_code):
+        return 対象者マスタ.objects.get(対象者コード=person_code)
+
+    @staticmethod
+    def get_all_member_code():
+        return '0000000000'
 
 
 class 定例支出マスタ(models.Model):
@@ -57,6 +69,10 @@ class 定例支出マスタ(models.Model):
     def __str__(self):
         return str(self.id)
 
+    @staticmethod
+    def get_row(row_id):
+        return 定例支出マスタ.objects.get(id=row_id)
+
 
 class 支出基本(models.Model):
     """
@@ -76,7 +92,7 @@ class 支出基本(models.Model):
     objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
 
     def __str__(self):
-        return str(self.支出基本id)
+        return str(self.id)
 
 
 class 支出明細(models.Model):
@@ -97,4 +113,32 @@ class 支出明細(models.Model):
     def __str__(self):
         return str(self.id)
 
+    @staticmethod
+    def get_row(row_id):
+        return 支出明細.objects.get(id=row_id)
 
+
+class カード支出明細(models.Model):
+    """
+    カードの支出を管理
+    """
+    支払月 = models.CharField(max_length=6, blank=True, null=True)
+    支払方法 = models.CharField(max_length=10, blank=True, null=True)
+    利用日 = models.CharField(max_length=8, blank=True, null=True)
+    利用店名 = models.CharField(max_length=100, blank=True, null=True)
+    利用者 = models.CharField(max_length=10, blank=True, null=True)
+    利用金額 = models.IntegerField(blank=True, null=True)
+    支出分類コード = models.ForeignKey(支出分類マスタ, on_delete=models.PROTECT, blank=True, null=True)
+    対象者コード = models.ForeignKey(対象者マスタ, on_delete=models.PROTECT, blank=True, null=True)
+    備考 = models.CharField(max_length=100, blank=True, null=True)
+    作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
+    削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
+    objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
+
+    def __str__(self):
+        return str(self.id)
+
+    @staticmethod
+    def get_row(row_id):
+        return カード支出明細.objects.get(id=row_id)
