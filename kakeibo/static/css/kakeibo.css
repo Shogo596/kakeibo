@@ -1,3 +1,15 @@
+/* Webサイト全体のフォントを調整 */
+:root{
+    --font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, "游ゴシック体", "Yu Gothic", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, "游ゴシック体", "Yu Gothic", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, 'Open Sans', sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Helvetica Neue", Helvetica, Arial, "游ゴシック体", "Yu Gothic", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, 'Open Sans', sans-serif;
+}
+
 /* カレンダーオブジェクトを"inline-block"にして横幅の調整。*/
 .datetimepicker {
     display: inline-block;
@@ -8,6 +20,13 @@
     height: 32px;
 }
 
+/* ファイルインポート部を調整する */
 .file_import {
     display: inline-flex;
+}
+
+/* ナビゲーションバーに余計な点を出さないようにする。 */
+.navbar-nav li {
+    list-style-type: none;
+    padding: 1px 0;
 }

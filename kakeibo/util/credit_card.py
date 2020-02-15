@@ -1,4 +1,7 @@
 class CreditCardDataList:
+    """
+    複数のクレジットカードデータの取りまとめクラス
+    """
     def __init__(self):
         self._data_list = []  # CardDataを格納
 
@@ -6,10 +9,17 @@ class CreditCardDataList:
         card_data: CreditCardData = card_data
         self._data_list.append(card_data)
 
+    def get_data_list(self):
+        return self._data_list
+
     def set_csv_data(self, csv_file):
         pass
 
     def set_card_detail_table_data(self, card_detail_records):
+        """
+        カード支出明細データをこのクラスにセットする。
+        :param card_detail_records: カード支出明細データ
+        """
         for card_detail_row in card_detail_records:
             card_data = CreditCardData()
             card_data.table_id = card_detail_row.id
@@ -23,9 +33,6 @@ class CreditCardDataList:
             card_data.remarks = card_detail_row.備考
 
             self._data_list.append(card_data)
-
-    def get_data_list(self):
-        return self._data_list
 
     def get_total_use_money(self) -> int:
         """
@@ -41,6 +48,10 @@ class CreditCardDataList:
 
 class RakutenCardDataList(CreditCardDataList):
     def set_csv_data(self, csv_file):
+        """
+        csvデータをもとにこのクラスにデータをセットする。
+        :param csv_file: csvデータ
+        """
         for line in csv_file:
             card_data = RakutenCardData()
             card_data.use_date = str(line['利用日']).replace('/', '')
@@ -54,6 +65,9 @@ class RakutenCardDataList(CreditCardDataList):
 
 
 class CreditCardData:
+    """
+    クレジットカードデータの構造体クラス
+    """
     table_id = 0
     use_date = ''
     shop_name = ''
@@ -65,6 +79,10 @@ class CreditCardData:
     remarks = ''
 
     def is_table_record(self):
+        """
+        カード支出明細テーブルから取得したデータかを判定する。idが0の場合はテーブルから取得していない。
+        :return:
+        """
         return True if self.table_id != 0 else False
 
 

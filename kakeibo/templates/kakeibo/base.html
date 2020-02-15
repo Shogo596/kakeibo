@@ -3,31 +3,76 @@
 <html>
     <head>
         <title>家計簿</title>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-
+        <!-- base css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{% static 'css/kakeibo.css' %}">
 
-        <!-- for admin widgets -->
-        <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
-
-        <!-- for bootstrap-datetimepicker -->
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-        <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+        <!-- js for bootstrap-datetimepicker -->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         {{ form.media }}
-        <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
-        <script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
-        <!-- end for admin widgets -->
     </head>
     <body>
-        <div class="page-header">
-            <h1><a href="/kakeibo">家計簿</a></h1>
-        </div>
-        <div class="content container">
+        <nav class="navbar navbar-expand-md  navbar-light bg-light">
+            <a class="navbar-brand" href="{% url 'Kakeibo:top' %}">
+                家計簿Web
+<!--                <small class="text-muted">ver.0.1.0</small>-->
+            </a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#bs-navi" aria-controls="bs-navi" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navi">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'Kakeibo:top' %}">ホーム</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown_kakeibo_input" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            家計簿入力
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown_kakeibo_input">
+                            <a class="dropdown-item" href="{% url 'Kakeibo:view_list' %}">日別支出入力</a>
+                            <a class="dropdown-item" href="{% url 'Kakeibo:regist_regular_expense' %}">月別支出入力</a>
+                            <a class="dropdown-item" href="{% url 'Kakeibo:credit_card_regist' %}">月別カード支出入力</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown_kakeibo_output" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            家計簿表示
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown_kakeibo_output">
+                            <a class="dropdown-item">製作中...</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown_search" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            検索
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown_search">
+                            <a class="dropdown-item" href="https://www.yahoo.co.jp/">やふー</a>
+                            <a class="dropdown-item" href="https://www.google.com/">ぐーぐる</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown_shopping" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            買い物
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown_shopping">
+                            <a class="dropdown-item" href="https://www.amazon.co.jp/">あまぞん</a>
+                            <a class="dropdown-item" href="https://www.rakuten.co.jp/">らくてん</a>
+                            <a class="dropdown-item" href="https://shopping.yahoo.co.jp/">やふー</a>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/Shogo596/kakeibo">GitHub</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <br/>
+
+        <div class="container">
             {% block content %}
             {% endblock %}
         </div>

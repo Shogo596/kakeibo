@@ -11,14 +11,16 @@ import mysite.util as base_util
 
 '''
 ！！リファクタリングしたいこと！！
-・row_idのもたせ方
-　→「CardDetailTableOperation」の引数は「カード支出明細」のListにする。
-　　classごとにインターフェースとなるオブジェクトを設定するのがいいかも。
 ・セッションの共通化、セッションがどこまで有効かを定義
 '''
 
 
 def credit_card_regist(request):
+    """
+    カード支出登録画面を制御する。
+    :param request: ブラウザから送信されたデータ
+    :return: Templateに送るデータ
+    """
 
     # 現在日時の取得
     dt_now = base_util.datetime.now()
@@ -40,6 +42,7 @@ def credit_card_regist(request):
         if 'form_name' in request_data:
             form_name = request_data.get('form_name')
 
+        # 年月変更操作
         if form_name == 'trans_page':
             # 入力した値の取得。値の整形もしている。
             detail_form_data = YMForm(request_data)
@@ -60,30 +63,40 @@ def credit_card_regist(request):
             if 'back' in request_data:
                 yyyymm = base_util.calc_date(yyyymm, 0, -1, 0)
 
+        # クレジットカードデータのcsv取込
         if form_name == 'import_file':
             if 'import' in request_data:
+
+                # ブラウザで入力したcsvファイルの取得
                 file_data = TextIOWrapper(request.FILES['csvfile'].file, encoding='Shift_JIS')
-                # csv_file = csv.reader(file_data)
+                # csvデータを変数に格納
                 csv_file = csv.DictReader(file_data)
 
+                # csvデータをRakutenCardDataListに格納
                 card_data_list_from_csv = cc.RakutenCardDataList()
                 card_data_list_from_csv.set_csv_data(csv_file)
 
-                card_detail_operation.ins_row(yyyymm, card_data_list_from_csv)
+                # カード支出明細テーブルへのインサート
+                card_detail_operation.ins_rows(yyyymm, card_data_list_from_csv)
 
+        # 画面入力されたデータを更新する。
         if form_name == 'regist_card_data':
             if 'regist' in request_data:
+
+                # 入力値チェック
                 card_formset = CardFormSet(request_data)
                 card_formset.is_valid()
 
+                # updateデータの取得、更新
                 upd_card_data_list_from_formset = get_card_data_list_from_formset(card_formset, UpdDelKubun.update)
-                card_detail_operation.upd_row(upd_card_data_list_from_formset)
+                card_detail_operation.upd_rows(upd_card_data_list_from_formset)
 
+                # 削除データの取得、削除
                 del_card_data_list_from_formset = get_card_data_list_from_formset(card_formset, UpdDelKubun.delete)
-                card_detail_operation.del_row(del_card_data_list_from_formset)
+                card_detail_operation.del_rows(del_card_data_list_from_formset)
 
+    # 画面表示用にクレジットカードデータを取得
     card_detail_records = card_detail_operation.get_month_records(yyyymm)
-    # card_form_initial_data = get_rakuten_card_form_initial_data(card_data_list_month)
     card_form_initial_data = get_card_formset_initial_data(card_detail_records)
 
     form_ymform = YMForm(initial={'YYYYMM': yyyymm})
@@ -101,6 +114,11 @@ def credit_card_regist(request):
 
 
 def get_card_formset_initial_data(card_detail_records):
+    """
+    カード支出明細テーブルからカード支出登録フォームの表示データの取得
+    :param card_detail_records: カード支出明細テーブルデータ
+    :return: カード支出登録フォームの表示データ
+    """
     result = []
 
     for card_detail_row in card_detail_records:
@@ -123,22 +141,31 @@ def get_card_formset_initial_data(card_detail_records):
 
 
 def get_card_data_list_from_formset(card_formset, is_upd_del):
+    """
+    画面入力データをRakutenCardDataListに格納して返す。
+    :param card_formset: 画面入力データ
+    :param is_upd_del: 更新データか削除データかどっちを取得するか判定するフラグ
+    :return: RakutenCardDataListデータ
+    """
     card_data_list = cc.RakutenCardDataList()
 
     for card_form in card_formset:
         card_form: CardForm = card_form.cleaned_data
 
+        # 「支出分類_対象者」が入力されていれば取得、なければ空のリストを取得
         if card_form['classify_person'] != '':
             classify_person = str(card_form['classify_person']).split('_')
         else:
             classify_person = ['', '']
 
+        # 更新データを設定
         card_data: cc.RakutenCardData = cc.RakutenCardData()
         card_data.table_id = card_form['row_id']
         card_data.classify_code = classify_person[0]
         card_data.person_code = classify_person[1]
         card_data.remarks = card_form['remarks']
 
+        # 削除のチェックボックスが有効であるかを判定
         if card_form['delete'] == (not bool(is_upd_del)):
             card_data_list.set_row(card_data)
 

@@ -1,9 +1,9 @@
 {% extends 'kakeibo/base.html' %}
 
 {% block content %}
-    <h2>カード支出登録画面</h2>
+    <h4>カード支出登録画面</h4>
     <!-- ページ移動部 -->
-    <form action="/kakeibo/credit_card_regist/" method="post">
+    <form action="{% url 'Kakeibo:credit_card_regist' %}" method="post">
 
         <!-- form内での固有記載 -->
         {% csrf_token %}

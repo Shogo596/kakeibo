@@ -49,6 +49,9 @@ class DetailForm(forms.Form):
 
 
 class RegularForm(forms.Form):
+    """
+    例月支出データの表示フォーム
+    """
     form_name = forms.CharField(label='フォーム名', required=False)
     date = forms.CharField(max_length=8, label='対象年月日', required=False, widget=forms.HiddenInput())
     classify_code = forms.CharField(max_length=10, label='支出分類コード', required=False, widget=forms.HiddenInput())
@@ -60,10 +63,16 @@ RegularFormSet = forms.formset_factory(RegularForm, extra=0)
 
 
 class YMForm(forms.Form):
+    """
+    年月遷移用のフォーム
+    """
     YYYYMM = forms.CharField(max_length=6, label='年月')
 
 
 class CardForm(forms.Form):
+    """
+    カード支出データ表示用のフォーム
+    """
     classify_person_combobox = util.get_classify_person_combobox(kotei_hendo_kubun='')
 
     row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())

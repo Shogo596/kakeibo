@@ -76,6 +76,11 @@ def delete_detail_row(row_id):
 
 
 def get_classify_person_combobox(kotei_hendo_kubun):
+    """
+    コンボボックス表示用に「支出分類コード_対象者コード」のリストを作成する。
+    :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
+    :return: コンボボックス用のリスト
+    """
     result = [('', '')]  # comboboxの先頭は空白に。
 
     classify_person_list = get_classify_person_list(kotei_hendo_kubun)
@@ -88,16 +93,25 @@ def get_classify_person_combobox(kotei_hendo_kubun):
 
 
 def get_classify_person_list(kotei_hendo_kubun):
+    """
+    支出分類と対象者のペアをリストで返す。
+    :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
+    :return: ペアのリスト
+    """
     result = []
 
     classify_records = classify_master
     person_records = person_master
 
+    # 固定変動区分で絞り込み
     if kotei_hendo_kubun != '':
         classify_records = classify_master.filter(固定変動区分=kotei_hendo_kubun)
 
-    for classify_row in classify_records:
+    # 変動費から表示するように逆順にする。
+    classify_records = classify_records.order_by('固定変動区分').reverse()
 
+    for classify_row in classify_records:
+        # 世帯全員以外の対象者を取得する。
         person_records = person_records.exclude(対象者コード=対象者マスタ.get_all_member_code())
         for person_row in person_records:
 
@@ -108,6 +122,7 @@ def get_classify_person_list(kotei_hendo_kubun):
 
             result.append(classify_person_data)
 
+            # 区別しない場合は対象者でループする必要がないからbreak
             if classify_row.対象者区別有無 != '1':
                 break
 
@@ -115,6 +130,9 @@ def get_classify_person_list(kotei_hendo_kubun):
 
 
 class ClassifyPersonData:
+    """
+    支出分類と対象者をペアで格納するクラス
+    """
     classify = ''
     person = ''
 
@@ -123,11 +141,16 @@ class ClassifyPersonData:
         self.person = person
 
     def get_classify_person_name(self):
+        """
+        支出分類と対象者のペアの名前を返す。
+        :return: ペア
+        """
         classify_row = classify_master.filter(支出分類コード=self.classify)[0]
         person_row = person_master.filter(対象者コード=self.person)[0]
 
         result = classify_row.支出分類名
 
+        # 対象者が世帯全員以外の場合は「支出分類（対象者）」にする。
         if self.person != '0000000000':
             result += '(' + person_row.対象者名 + ')'
 
@@ -135,6 +158,9 @@ class ClassifyPersonData:
 
 
 class TableOperationBase:
+    """
+    テーブル操作の基底クラス
+    """
     def __init__(self, master: QuerySet):
         self._records = master
 
@@ -144,30 +170,32 @@ class TableOperationBase:
     def get_all_records(self):
         return self._records.all()
 
-
-class CardDetailTableContainer:
-    def __init__(self, table_list=None):
-        self.table_list = table_list if table_list is not None else []
-
-    def set_row(self, row):
-        self.table_list.append(row)
-
-    def get_list(self):
-        return self.table_list
+    def get_records_using_dict(self, condition: dict):
+        """
+        dictで取得した条件でレコードを返す。
+        :param condition: 検索条件
+        :return: 取得結果
+        """
+        return self._records.filter(**condition)
 
 
 class CardDetailTableOperation(TableOperationBase):
+    """
+    カード支出明細テーブルの操作クラス
+    """
     def __init__(self, card_detail_master: QuerySet):
         super().__init__(card_detail_master)
         self.__card_detail_records = self._records
 
-    def get_records_using_dict(self, condition: dict):
-        return self.__card_detail_records.filter(**condition)
-
     def get_month_records(self, yyyymm):
         return self.__card_detail_records.filter(支払月=yyyymm)
 
-    def ins_row(self, yyyymm, card_data_list: cc.CreditCardDataList):
+    def ins_rows(self, yyyymm, card_data_list: cc.CreditCardDataList):
+        """
+        引数の年月についてdelete-insertする。
+        :param yyyymm: insertする支払月の指定
+        :param card_data_list: insertデータの中身
+        """
         del_records = self.get_month_records(yyyymm)
         del_records.update(削除フラグ='1')
 
@@ -193,7 +221,11 @@ class CardDetailTableOperation(TableOperationBase):
                 defaults=ins_upd_data,
             )
 
-    def upd_row(self, card_data_list: cc.CreditCardDataList):
+    def upd_rows(self, card_data_list: cc.CreditCardDataList):
+        """
+        支出分類コード、対象者コード、備考を更新する。
+        :param card_data_list: 更新対象データ
+        """
         update_records = []
         update_fields = ['支出分類コード', '対象者コード', '備考']
 
@@ -211,7 +243,11 @@ class CardDetailTableOperation(TableOperationBase):
 
         self.__card_detail_records.bulk_update(update_records, fields=update_fields)
 
-    def del_row(self, card_data_list: cc.CreditCardDataList):
+    def del_rows(self, card_data_list: cc.CreditCardDataList):
+        """
+        削除する。
+        :param card_data_list: 削除対象データ
+        """
         update_records = []
         update_fields = ['削除フラグ']
 
