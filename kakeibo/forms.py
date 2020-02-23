@@ -1,5 +1,5 @@
 from django import forms
-from .models import 支出分類マスタ, 対象者マスタ
+from .models import 収入支出分類マスタ, 対象者マスタ
 # from django.contrib.admin.widgets import AdminDateWidget
 import bootstrap_datepicker_plus as datetimepicker
 import kakeibo.util.kakeibo_util as util
@@ -20,8 +20,8 @@ class DetailForm(forms.Form):
     """
     # 支出分類マスタからプルダウン用のリストを作成。
     classify_list = []
-    for object in 支出分類マスタ.objects.filter(削除フラグ='0', 固定変動区分='1').order_by('表示順序'):
-        classify_list.append((object.支出分類コード, object.支出分類名))
+    for object in 収入支出分類マスタ.objects.filter(削除フラグ='0', 固定変動区分='1').order_by('表示順序'):
+        classify_list.append((object.収入支出分類コード, object.収入支出分類名))
 
     # 対象者マスタからプルダウン用のリストを作成。
     person_list = []
@@ -54,7 +54,7 @@ class RegularForm(forms.Form):
     """
     form_name = forms.CharField(label='フォーム名', required=False)
     date = forms.CharField(max_length=8, label='対象年月日', required=False, widget=forms.HiddenInput())
-    classify_code = forms.CharField(max_length=10, label='支出分類コード', required=False, widget=forms.HiddenInput())
+    classify_code = forms.CharField(max_length=10, label='収入支出分類コード', required=False, widget=forms.HiddenInput())
     person_code = forms.CharField(max_length=10, label='対象者コード', required=False, widget=forms.HiddenInput())
     money = forms.IntegerField(label='金額')
 
@@ -66,7 +66,23 @@ class YMForm(forms.Form):
     """
     年月遷移用のフォーム
     """
-    YYYYMM = forms.CharField(max_length=6, label='年月')
+    yyyymm = forms.CharField(max_length=6, label='年月', widget=forms.TextInput(attrs={'size': 6}))
+    period = forms.IntegerField(label='期間', widget=forms.TextInput(attrs={'size': 2}))
+    interval = forms.IntegerField(label='間隔', widget=forms.TextInput(attrs={'size': 2}))
+
+
+class InOutCheckForm(forms.Form):
+    # 「"収入支出区分_固定変動区分", 表示名称」でリスト作成
+    CHOICE = [
+        ('0_1', '収入'),
+        ('1_0', '支出（固定費）'),
+        ('1_1', '支出（変動費）'),
+    ]
+    check = forms.MultipleChoiceField(label='収支表示内容', choices=CHOICE, required=True,
+                                      widget=forms.CheckboxSelectMultiple(attrs={"onChange": 'submit();',
+                                                                                 "id": 'check',
+                                                                                 })
+                                      )
 
 
 class CardForm(forms.Form):
@@ -83,7 +99,7 @@ class CardForm(forms.Form):
     # memo:↓必須制御をかけると画面から取得した場合にkey errorになる。
     classify_person = forms.ChoiceField(label='支出分類_対象者',
                                         required=False, widget=forms.Select, choices=classify_person_combobox)
-    remarks = forms.CharField(label='支出分類コード', max_length=100, required=False)
+    remarks = forms.CharField(label='収入支出分類コード', max_length=100, required=False)
     delete = forms.BooleanField(label='削除', required=False, widget=forms.CheckboxInput())
 
 

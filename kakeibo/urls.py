@@ -14,4 +14,7 @@ urlpatterns = [
 
     # クレジットカードデータ登録画面への遷移
     path('kakeibo/credit_card_regist/', views.credit_card_regist, name='credit_card_regist'),
+
+    # 期間集計結果表示画面への遷移
+    path('kakeibo/display_classify_total/', views.display_classify_total, name='display_classify_total'),
 ]

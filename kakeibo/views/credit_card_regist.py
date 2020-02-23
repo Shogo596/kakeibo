@@ -49,7 +49,7 @@ def credit_card_regist(request):
             detail_form_data.is_valid()
             cleaned_data = detail_form_data.cleaned_data
 
-            _yyyymm = cleaned_data.get('YYYYMM')
+            _yyyymm = cleaned_data.get('yyyymm')
 
             # 移動ボタン押下時処理
             if 'change' in request_data:
@@ -57,11 +57,11 @@ def credit_card_regist(request):
 
             # 次月ボタン押下時処理
             if 'next' in request_data:
-                yyyymm = base_util.calc_date(yyyymm, 0, 1, 0)
+                yyyymm = base_util.Date.calc_date(yyyymm, 0, 1, 0)
 
             # 前月ボタン押下時処理
             if 'back' in request_data:
-                yyyymm = base_util.calc_date(yyyymm, 0, -1, 0)
+                yyyymm = base_util.Date.calc_date(yyyymm, 0, -1, 0)
 
         # クレジットカードデータのcsv取込
         if form_name == 'import_file':
@@ -99,7 +99,7 @@ def credit_card_regist(request):
     card_detail_records = card_detail_operation.get_month_records(yyyymm)
     card_form_initial_data = get_card_formset_initial_data(card_detail_records)
 
-    form_ymform = YMForm(initial={'YYYYMM': yyyymm})
+    form_ymform = YMForm(initial={'yyyymm': yyyymm})
     form_card_formset = CardFormSet(initial=card_form_initial_data)
 
     # セッションデータの登録
@@ -130,7 +130,7 @@ def get_card_formset_initial_data(card_detail_records):
             'use_date': card_detail_row.利用日,
             'shop_name': card_detail_row.利用店名,
             'money': card_detail_row.利用金額,
-            'classify_person': '{0}_{1}'.format(str(card_detail_row.支出分類コード), str(card_detail_row.対象者コード)),
+            'classify_person': '{0}_{1}'.format(str(card_detail_row.収入支出分類コード), str(card_detail_row.対象者コード)),
             'delete': False,
             'remarks': card_detail_row.備考,
         }

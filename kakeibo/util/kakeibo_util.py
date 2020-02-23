@@ -1,4 +1,4 @@
-from kakeibo.models import 支出明細, 支出分類マスタ, 対象者マスタ, カード支出明細
+from kakeibo.models import 収入支出明細, 収入支出分類マスタ, 対象者マスタ, カード支出明細
 # import mysite.util as util
 from django.db.models.query import QuerySet
 import kakeibo.util.credit_card as cc
@@ -7,7 +7,7 @@ import kakeibo.util.credit_card as cc
 TAX = 1.1
 
 # マスタデータ
-classify_master = 支出分類マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
+classify_master = 収入支出分類マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
 person_master = 対象者マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
 
 
@@ -15,7 +15,7 @@ def add_upd_detail_row(date, classify, person, name, money, is_tax, upd_flg):
     """
     支出明細テーブルに支出データを更新する。
     :param date: 対象年月日
-    :param classify: 支出分類コード
+    :param classify: 収入支出分類コード
     :param person: 対象者コード
     :param name: 項目名
     :param money: 金額
@@ -29,9 +29,9 @@ def add_upd_detail_row(date, classify, person, name, money, is_tax, upd_flg):
 
     if upd_flg == '1':
         # defaults以外をキーとして、データがあればINSERT、データがなければdefaultで値を更新する。
-        支出明細.objects.update_or_create(
+        収入支出明細.objects.update_or_create(
             対象年月日=date,
-            支出分類コード=支出分類マスタ.objects.get(支出分類コード=classify),
+            収入支出分類コード=収入支出分類マスタ.objects.get(収入支出分類コード=classify),
             対象者コード=対象者マスタ.objects.get(対象者コード=person),
             項目名=name,
             削除フラグ='0',
@@ -40,9 +40,9 @@ def add_upd_detail_row(date, classify, person, name, money, is_tax, upd_flg):
             },
         )
     else:
-        支出明細.objects.create(
+        収入支出明細.objects.create(
             対象年月日=date,
-            支出分類コード=支出分類マスタ.objects.get(支出分類コード=classify),
+            収入支出分類コード=収入支出分類マスタ.objects.get(収入支出分類コード=classify),
             対象者コード=対象者マスタ.objects.get(対象者コード=person),
             項目名=name,
             削除フラグ='0',
@@ -69,15 +69,15 @@ def delete_detail_row(row_id):
     """
     # 物理削除はやめた。
     # detail_id = data['id']
-    # 支出明細.objects.filter(id=detail_id).delete()
+    # 収入支出明細.objects.filter(id=detail_id).delete()
 
     # 削除フラグを更新する。
-    支出明細.objects.filter(id=row_id).update(削除フラグ='1')
+    収入支出明細.objects.filter(id=row_id).update(削除フラグ='1')
 
 
 def get_classify_person_combobox(kotei_hendo_kubun):
     """
-    コンボボックス表示用に「支出分類コード_対象者コード」のリストを作成する。
+    コンボボックス表示用に「収入支出分類コード_対象者コード」のリストを作成する。
     :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
     :return: コンボボックス用のリスト
     """
@@ -94,7 +94,7 @@ def get_classify_person_combobox(kotei_hendo_kubun):
 
 def get_classify_person_list(kotei_hendo_kubun):
     """
-    支出分類と対象者のペアをリストで返す。
+    収入支出分類と対象者のペアをリストで返す。
     :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
     :return: ペアのリスト
     """
@@ -116,9 +116,9 @@ def get_classify_person_list(kotei_hendo_kubun):
         for person_row in person_records:
 
             if classify_row.対象者区別有無 == '1':
-                classify_person_data = ClassifyPersonData(classify_row.支出分類コード, person_row.対象者コード)
+                classify_person_data = ClassifyPersonData(classify_row.収入支出分類コード, person_row.対象者コード)
             else:
-                classify_person_data = ClassifyPersonData(classify_row.支出分類コード, 対象者マスタ.get_all_member_code())
+                classify_person_data = ClassifyPersonData(classify_row.収入支出分類コード, 対象者マスタ.get_all_member_code())
 
             result.append(classify_person_data)
 
@@ -131,7 +131,7 @@ def get_classify_person_list(kotei_hendo_kubun):
 
 class ClassifyPersonData:
     """
-    支出分類と対象者をペアで格納するクラス
+    収入支出分類と対象者をペアで格納するクラス
     """
     classify = ''
     person = ''
@@ -142,15 +142,15 @@ class ClassifyPersonData:
 
     def get_classify_person_name(self):
         """
-        支出分類と対象者のペアの名前を返す。
+        収入支出分類と対象者のペアの名前を返す。
         :return: ペア
         """
-        classify_row = classify_master.filter(支出分類コード=self.classify)[0]
+        classify_row = classify_master.filter(収入支出分類コード=self.classify)[0]
         person_row = person_master.filter(対象者コード=self.person)[0]
 
-        result = classify_row.支出分類名
+        result = classify_row.収入支出分類名
 
-        # 対象者が世帯全員以外の場合は「支出分類（対象者）」にする。
+        # 対象者が世帯全員以外の場合は「収入支出分類（対象者）」にする。
         if self.person != '0000000000':
             result += '(' + person_row.対象者名 + ')'
 
@@ -204,8 +204,8 @@ class CardDetailTableOperation(TableOperationBase):
 
             ins_upd_data = {}
             if card_data.classify_code != '':
-                ins_upd_data['支出分類コード'] = \
-                    支出分類マスタ.objects.get(支出分類コード=card_data.classify_code)
+                ins_upd_data['収入支出分類コード'] = \
+                    収入支出分類マスタ.objects.get(収入支出分類コード=card_data.classify_code)
             if card_data.classify_code != '':
                 ins_upd_data['対象者コード'] = 対象者マスタ.objects.get(対象者コード=card_data.person_code)
             ins_upd_data['備考'] = card_data.remarks
@@ -223,11 +223,11 @@ class CardDetailTableOperation(TableOperationBase):
 
     def upd_rows(self, card_data_list: cc.CreditCardDataList):
         """
-        支出分類コード、対象者コード、備考を更新する。
+        収入支出分類コード、対象者コード、備考を更新する。
         :param card_data_list: 更新対象データ
         """
         update_records = []
-        update_fields = ['支出分類コード', '対象者コード', '備考']
+        update_fields = ['収入支出分類コード', '対象者コード', '備考']
 
         for card_data in card_data_list.get_data_list():
             card_data: cc.CreditCardData = card_data
@@ -235,7 +235,7 @@ class CardDetailTableOperation(TableOperationBase):
             if card_data.is_table_record():
                 row: カード支出明細 = self.get_row(card_data.table_id)
                 if card_data.classify_code != '':
-                    row.支出分類コード = 支出分類マスタ.get_row(card_data.classify_code)
+                    row.収入支出分類コード = 収入支出分類マスタ.get_row(card_data.classify_code)
                 if card_data.classify_code != '':
                     row.対象者コード = 対象者マスタ.get_row(card_data.person_code)
                 row.備考 = card_data.remarks

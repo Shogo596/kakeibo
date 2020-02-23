@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from kakeibo.models import 支出明細
+from kakeibo.models import 収入支出明細
 from kakeibo.forms import DetailForm
 from urllib.parse import urlencode
 import kakeibo.util.kakeibo_util as util
@@ -16,10 +16,10 @@ def view_list(request):
     """
 
     # 支出明細の取得。支出データ一覧部の表示に利用する。
-    # details = 支出明細.objects.order_by('id').reverse()[:20]
+    # details = 収入支出明細.objects.order_by('id').reverse()[:20]
     # details = details.reverse()[:20]
-    # details = 支出明細.objects.filter(削除フラグ='0', 支出分類マスタ__固定変動区分='1').order_by('id').reverse().select_related()
-    details = 支出明細.objects.filter(削除フラグ='0', 支出分類コード__固定変動区分='1').order_by('id').reverse()
+    # details = 収入支出明細.objects.filter(削除フラグ='0', 支出分類マスタ__固定変動区分='1').order_by('id').reverse().select_related()
+    details = 収入支出明細.objects.filter(削除フラグ='0', 収入支出分類コード__固定変動区分='1').order_by('id').reverse()
 
     # 支出データ入力欄の初期値設定の初期化。
     initial_value_dict = {

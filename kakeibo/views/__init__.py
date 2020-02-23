@@ -1,3 +1,4 @@
 from kakeibo.views.view_list import view_list
 from kakeibo.views.regist_regular_expense import regist_regular_expense
 from kakeibo.views.credit_card_regist import credit_card_regist
+from kakeibo.views.display_classify_total import display_classify_total

@@ -1,0 +1,50 @@
+{% extends 'kakeibo/base.html' %}
+{% load static %}
+
+{% block content %}
+    <h4>期間集計結果表示画面</h4>
+    <!-- ページ移動部 -->
+    <form action="{% url 'Kakeibo:display_classify_total' %}" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="trans_page">
+
+        <div class="float-right">
+            {{ ymform.yyyymm }}から{{ ymform.period }}ヶ月間
+            <input type="submit" name="change" value="変更">
+            <input type="submit" name="back" value="前月">
+            <input type="submit" name="next" value="次月">
+        </div>
+    </form>
+
+    <hr/>
+
+    <!-- 収支表示内容変更部 -->
+    <form action="{% url 'Kakeibo:display_classify_total' %}" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="change_inout">
+
+        <div class="float-right">
+            <b>{{ inout_check_form.check.label }}</b> :
+            {% for check in inout_check_form.check %}
+            {{ check }}
+            {% endfor %}
+        </div>
+    </form>
+
+    <hr/>
+
+    <!-- 円グラフ表示部 -->
+    <!--  以下の構成をコピーすることで他のTemplateでも利用可能  -->
+    <canvas id="PieChart"></canvas>
+    <script>
+        var str_title = "{{ pie_chart_data.title }}";
+        var arr_labels = [{% for label in pie_chart_data.labels %}"{{ label }}",{% endfor %}];
+        var arr_data = {{ pie_chart_data.data }}
+    </script>
+    <script type="text/javascript" src="{% static 'js/pie_chart.js' %}"></script>
+
+{% endblock %}
