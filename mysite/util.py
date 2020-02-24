@@ -17,7 +17,7 @@ class Date:
         :param addyear: 計算値（マイナス値可能）
         :param addmonth: 計算値（マイナス値可能）
         :param addday: 計算値（マイナス値可能）
-        :return:
+        :return: 日付計算結果
         """
 
         # 引数「日付」の文字長を取得
@@ -41,6 +41,28 @@ class Date:
             result = dt_date.strftime('%Y%m')
         if date_len == 8:
             result = dt_date.strftime('%Y%m%d')
+
+        return result
+
+    @staticmethod
+    def add_slash(date: str):
+        """
+        日付文字列にスラッシュを追加する。
+        :param date: 日付（文字列。4桁 or 6桁 or 8桁のみ。）
+        :return: スラッシュを追加した文字列
+        """
+        # 引数「日付」の文字長を取得
+        date_len = len(date)
+
+        # 日付に応じてスラッシュを追加する。
+        result = ''
+        if date_len == 4:
+            result = date
+        if date_len == 6:
+            result = STR.insert_str(date, '/', 4)
+        if date_len == 8:
+            wk = STR.insert_str(date, '/', 6)
+            result = STR.insert_str(wk, '/', 4)
 
         return result
 
@@ -130,4 +152,17 @@ class DB:
         ]
 
 
-
+############################################################################################
+# 文字列操作
+############################################################################################
+class STR:
+    @staticmethod
+    def insert_str(base_str, ins_str, point: int):
+        """
+        文字列に文字列を挿入する。
+        :param base_str: 挿入元の文字列
+        :param ins_str: 挿入先の文字列
+        :param point: 挿入場所（何文字目か）
+        :return: 挿入した文字列
+        """
+        return '{0}{1}{2}'.format(base_str[:point], ins_str, base_str[point:])

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <h4>期間集計結果表示画面</h4>
+    <h4>分類集計結果表示画面</h4>
     <!-- ページ移動部 -->
     <form action="{% url 'Kakeibo:display_classify_total' %}" method="post">
 
@@ -37,13 +37,16 @@
 
     <hr/>
 
+    <!-- 円グラフのラベル表示用プラグイン -->
+    <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
+
     <!-- 円グラフ表示部 -->
     <!--  以下の構成をコピーすることで他のTemplateでも利用可能  -->
     <canvas id="PieChart"></canvas>
     <script>
-        var str_title = "{{ pie_chart_data.title }}";
-        var arr_labels = [{% for label in pie_chart_data.labels %}"{{ label }}",{% endfor %}];
-        var arr_data = {{ pie_chart_data.data }}
+        var strTitle = '{{ pie_chart_data.title }}';
+        var arrLabels = [{% for label in pie_chart_data.labels %}'{{ label }}',{% endfor %}];
+        var arrData = {{ pie_chart_data.data }};
     </script>
     <script type="text/javascript" src="{% static 'js/pie_chart.js' %}"></script>
 

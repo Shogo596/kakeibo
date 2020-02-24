@@ -66,9 +66,16 @@ class YMForm(forms.Form):
     """
     年月遷移用のフォーム
     """
-    yyyymm = forms.CharField(max_length=6, label='年月', widget=forms.TextInput(attrs={'size': 6}))
+    month = 1
+    year = 12
+    month_or_year_list = [
+        (month, '１月'),
+        (year, '１年'),
+    ]
+    yyyymm = forms.CharField(label='年月', max_length=6, widget=forms.TextInput(attrs={'size': 6}))
     period = forms.IntegerField(label='期間', widget=forms.TextInput(attrs={'size': 2}))
-    interval = forms.IntegerField(label='間隔', widget=forms.TextInput(attrs={'size': 2}))
+    # interval = forms.IntegerField(label='間隔', widget=forms.TextInput(attrs={'size': 2}))
+    interval = forms.ChoiceField(label='分類', widget=forms.Select, choices=month_or_year_list)
 
 
 class InOutCheckForm(forms.Form):

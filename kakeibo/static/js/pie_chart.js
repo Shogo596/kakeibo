@@ -5,23 +5,23 @@
  */
 
 //Template側で以下のように変数の宣言が必要。
-//var str_title = "タイトル";
-//var arr_labels = ["A型", "O型", "B型", "AB型"];
-//var arr_data = [38, 31, 21, 10]
+//var strTitle = 'タイトル';
+//var arrLabels = ['A型', 'O型', 'B型', 'AB型'];
+//var arrData = [38, 31, 21, 10]
 
 var ctx = document.getElementById("PieChart");
 var PieChart = new Chart(ctx, {
     type: 'pie',
     data: {
-        labels: arr_labels,
+        labels: arrLabels,
         datasets: [{
-            data: arr_data
+            data: arrData
         }]
     },
     options: {
         title: {
             display: true,
-            text: str_title
+            text: strTitle
         },
         plugins: {
             colorschemes: {

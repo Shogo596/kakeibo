@@ -1,0 +1,65 @@
+{% extends 'kakeibo/base.html' %}
+{% load static %}
+
+{% block content %}
+    <h4>期間集計結果表示画面</h4>
+    <!-- ページ移動部 -->
+    <form action="{% url 'Kakeibo:display_period_total' %}" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="trans_page">
+
+        <div class="float-right">
+            {{ ymform.yyyymm }}から{{ ymform.period }}ヶ月間を{{ ymform.interval }}間隔で表示
+            <input type="submit" name="change" value="変更">
+            <input type="submit" name="back" value="前">
+            <input type="submit" name="next" value="次">
+        </div>
+    </form>
+
+    <hr/>
+
+    <!-- 円グラフ表示部 -->
+    <!--  以下の構成をコピーすることで他のTemplateでも利用可能  -->
+<!--    <canvas id="PieChart"></canvas>-->
+<!--    <script>-->
+<!--        var str_title = "{{ pie_chart_data.title }}";-->
+<!--        var arr_labels = [{% for label in pie_chart_data.labels %}"{{ label }}",{% endfor %}];-->
+<!--        var arr_data = {{ pie_chart_data.data }}-->
+<!--    </script>-->
+<!--    <script type="text/javascript" src="{% static 'js/pie_chart.js' %}"></script>-->
+
+    <!-- 棒グラフ・折れ線グラフ表示部 -->
+    <!--  以下の構成をコピーすることで他のTemplateでも利用可能  -->
+    <canvas id="BarAndLineChart"></canvas>
+    <script>
+        //全体的な表示設定
+        var strTitle = '{{ bar_and_line_chart_data.title }}';
+        var arrLabels = [{% for label in bar_and_line_chart_data.labels %}'{{ label }}',{% endfor %}];
+
+        //棒グラフのY軸設定
+        var numBarMax = {{ bar_and_line_chart_data.barMax }};
+        var numBarMin = {{ bar_and_line_chart_data.barMin }};
+        var numBarStepSize = {{ bar_and_line_chart_data.barStepSize }};
+
+        //折れ線グラフのY軸設定
+        var numLineMax = {{ bar_and_line_chart_data.lineMax }};
+        var numLineMin = {{ bar_and_line_chart_data.lineMin }};
+        var numLineStepSize = {{ bar_and_line_chart_data.lineStepSize }};
+
+        //収入の棒グラフ設定
+        var strBar1Name = '{{ bar_and_line_chart_data.bar1Name }}';
+        var arrBar1Data = {{ bar_and_line_chart_data.bar1Data }};
+
+        //支出の棒グラフ設定
+        var strBar2Name = '{{ bar_and_line_chart_data.bar2Name }}';
+        var arrBar2Data = {{ bar_and_line_chart_data.bar2Data }};
+
+        //収支差額の折れ線グラフ設定
+        var strLine1Name = '{{ bar_and_line_chart_data.line1Name }}';
+        var arrLine1Data = {{ bar_and_line_chart_data.line1Data }};
+    </script>
+    <script type="text/javascript" src="{% static 'js/bar_and_line_chart.js' %}"></script>
+
+{% endblock %}

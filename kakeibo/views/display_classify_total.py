@@ -4,7 +4,7 @@ from django.shortcuts import render
 # 独自ライブラリ
 from kakeibo.forms import YMForm, InOutCheckForm
 import mysite.util as base_util
-import kakeibo.util.sql_operation as sql_operation
+import kakeibo.util.sql_operation as sql_ope
 
 
 def display_classify_total(request):
@@ -25,6 +25,7 @@ def display_classify_total(request):
     # ！！セッション周りとかはいつか共通化したい。！！
     yyyymm = request.session['yyyymm'] if 'yyyymm' in request.session else dt_now.strftime('%Y%m')
     period = request.session['period'] if 'period' in request.session else 1
+    # ↓円グラフ表示対象の"収入支出区分_固定変動区分"
     inout_check_list = request.session['inout'] if 'inout' in request.session else ['1_0', '1_1']
 
     # 年月変更処理
@@ -53,11 +54,12 @@ def display_classify_total(request):
 
     # 収支データの取得
     display_records = []
-    sql_file_name = 'monthly_inout_money.sql'  # 実行するSQLファイル名
+    start_ym = yyyymm
+    end_ym = base_util.Date.calc_date(start_ym, 0, period - 1, 0)
     for data in inout_check_list:
         check = str(data).split('_')
-        params = get_sql_params(yyyymm, period, check[0], check[1])
-        detail_records = sql_operation.execute(sql_file_name, params)
+        sql = sql_ope.MonthlyInoutMoney(start_ym, end_ym, check[0], check[1])
+        detail_records = sql.execute()
         display_records += detail_records
 
     # 画面表示データの作成
@@ -118,26 +120,6 @@ def get_ymform_data(request_data):
     return_ymform.data['period'] = period
 
     return return_ymform
-
-
-def get_sql_params(yyyymm, period, in_out_kubun, kotei_hendo_kubun):
-    """
-    「monthly_inout_money.sql」の実行時パラメータを取得。
-    :param yyyymm: 表示年月
-    :param period: 表示期間
-    :param in_out_kubun: 収入支出区分
-    :param kotei_hendo_kubun: 固定変動区分
-    :return: パラメータのList
-    """
-    start_ym = yyyymm
-    end_ym = base_util.Date.calc_date(start_ym, 0, period-1, 0)
-    params = [
-        start_ym,
-        end_ym,
-        in_out_kubun,
-        kotei_hendo_kubun,
-        ]
-    return params
 
 
 class PieChartData:

@@ -19,7 +19,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
         <!-- js for Chart.js color -->
         <script type="text/javascript" src="https://github.com/nagix/chartjs-plugin-colorschemes/releases/download/v0.2.0/chartjs-plugin-colorschemes.min.js"></script>
-        <!-- js for Pie Chart of Chart.js -->
+        <!-- js for Chart.js label（デフォルトで％表示されるようになる。） -->
         <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
     </head>
     <body>
@@ -50,7 +50,8 @@
                             家計簿表示
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown_kakeibo_output">
-                            <a class="dropdown-item" href="{% url 'Kakeibo:display_classify_total' %}">期間集計結果表示</a>
+                            <a class="dropdown-item" href="{% url 'Kakeibo:display_classify_total' %}">分類集計結果表示</a>
+                            <a class="dropdown-item" href="{% url 'Kakeibo:display_period_total' %}">期間集計結果表示</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
