@@ -28,9 +28,8 @@ class DetailForm(forms.Form):
     for object in 対象者マスタ.objects.filter(削除フラグ='0').exclude(対象者コード='0000000000').order_by('表示順序'):
         person_list.append((object.対象者コード, object.対象者名))
 
+    row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())
     # 日付項目は"datetimepicker"を利用してカレンダー入力を可能とする。
-    # date = forms.CharField(max_length=8, label='日付')
-    # date = forms.DateField(widget=AdminDateWidget(), label='日付')
     date = forms.CharField(widget=datetimepicker.DatePickerInput(
         format='%Y%m%d',
         options={
@@ -40,12 +39,11 @@ class DetailForm(forms.Form):
         attrs={'autofocus': 'autofocus'}
     ), label='日付')
     # 分類はプルダウンにする。
-    # classify = forms.CharField(max_length=10, label='分類')
-    classify = forms.ChoiceField(widget=forms.Select, choices=classify_list, label='分類')
-    person = forms.ChoiceField(widget=forms.Select, choices=person_list, label='対象者')
-    name = forms.CharField(max_length=100, label='項目名')
+    classify = forms.ChoiceField(label='分類', widget=forms.Select, choices=classify_list)
+    person = forms.ChoiceField(label='対象者', widget=forms.Select, choices=person_list)
+    name = forms.CharField(label='項目名', max_length=100)
     money = forms.IntegerField(label='金額')
-    is_tax = forms.BooleanField(widget=forms.CheckboxInput(), required=False, label='税')
+    is_tax = forms.BooleanField(label='税', required=False, widget=forms.CheckboxInput())
 
 
 class RegularForm(forms.Form):
@@ -57,6 +55,8 @@ class RegularForm(forms.Form):
     classify_code = forms.CharField(max_length=10, label='収入支出分類コード', required=False, widget=forms.HiddenInput())
     person_code = forms.CharField(max_length=10, label='対象者コード', required=False, widget=forms.HiddenInput())
     money = forms.IntegerField(label='金額')
+    # ↓'1'の場合は「金額」項目をdisabledにする。
+    money_disabled = forms.CharField(max_length=1, label='金額非表示有無', required=False, widget=forms.HiddenInput())
 
 
 RegularFormSet = forms.formset_factory(RegularForm, extra=0)

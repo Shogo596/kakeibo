@@ -44,6 +44,7 @@
                 </td>
             </tr>
         </table>
+    {{ form.row_id }}
     </form>
 
 
@@ -54,18 +55,19 @@
             <th>分類</th>
             <th>項目名</th>
             <th>金額</th>
-            <th>削除</th>
+            <th>操作</th>
         </tr>
         {% for detail in details %}
         <tr>
             <td>{{ detail.対象年月日 }}</td>
-<!--            <td>{{ detail.収入支出分類コード }}</td>-->
-            <td>{{ detail.支出分類コード.支出分類名 }}</td>
+            <td>{{ detail.収入支出分類コード.収入支出分類名 }}</td>
             <td>{{ detail.項目名 }}</td>
             <td>{{ detail.金額 }}</td>
             <td>
                 <form action="/kakeibo/" method="post">
                     {% csrf_token %}
+                    <input type="submit" name="edit" value="編集">
+                    /
                     <input type="submit" name="delete" value="削除">
                     <input type="hidden" name="id" value="{{ detail.id }}">
                 </form>

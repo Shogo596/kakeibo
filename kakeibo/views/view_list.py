@@ -1,11 +1,15 @@
+# 標準ライブラリ
 from django.shortcuts import render, redirect
+
+# 独自ライブラリ
 from kakeibo.models import 収入支出明細
 from kakeibo.forms import DetailForm
-from urllib.parse import urlencode
 import kakeibo.util.kakeibo_util as util
+import mysite.util as base_util
 
 # 定数
 VIEW_LIST_URL = '/kakeibo/view_list/'
+DISPLAY_ROW_NUM = 10
 
 
 def view_list(request):
@@ -19,25 +23,26 @@ def view_list(request):
     # details = 収入支出明細.objects.order_by('id').reverse()[:20]
     # details = details.reverse()[:20]
     # details = 収入支出明細.objects.filter(削除フラグ='0', 支出分類マスタ__固定変動区分='1').order_by('id').reverse().select_related()
-    details = 収入支出明細.objects.filter(削除フラグ='0', 収入支出分類コード__固定変動区分='1').order_by('id').reverse()
+    inout_details = 収入支出明細.objects.filter(削除フラグ='0', 収入支出分類コード__固定変動区分='1').order_by('id').reverse()
+    inout_detail_operation = util.InoutDetailTableOperation(inout_details)
 
     # 支出データ入力欄の初期値設定の初期化。
-    initial_value_dict = {
-        'date': '',
-        'classify': '',
-    }
+    initial_value_dict = {}
 
     # リクエストメソッドがGETの場合。
-    # 初期表示の場合か、支出データの追加登録後にリダイレクトにて表示される場合が対象。
+    # 初期表示の場合か、支出データの追加登録後、編集時にリダイレクトにて表示される場合が対象。
     if request.method == 'GET':
         data = request.GET  # 画面入力されたデータ
 
         date = data.get('date')
         classify = data.get('classify')
+        row_id = data.get('id')
 
-        # GETリクエストとして初期値が設定されている場合。（リダイレクトされてきた場合）
-        if date is not None and classify is not None:
-            set_initial_value(date, classify, initial_value_dict)
+        req_value = get_req_value(date, classify, row_id)
+        initial_value_dict.update(req_value)
+
+        row_value = get_row_value(inout_detail_operation, row_id)
+        initial_value_dict.update(row_value)
 
     # リクエストメソッドがPOSTの場合。
     # 登録ボタン押下時もしくは削除ボタン押下時。
@@ -56,21 +61,33 @@ def view_list(request):
         name = cleaned_data.get('name')
         money = cleaned_data.get('money')
         is_tax = cleaned_data.get('is_tax')
+        row_id = cleaned_data.get('row_id')
 
         # 削除時に使用する項目
-        row_id = request_data.get('id')
+        _id = request_data.get('id')
+
+        # 遷移先のURLの指定
+        redirect_url = VIEW_LIST_URL
+        req_params = {}
 
         if 'add' in request_data:
-            util.add_upd_detail_row(date, classify, person, name, money, is_tax, upd_flg='0')
+            inout_detail_operation.add_upd_row(row_id, date, classify, person, name, money, is_tax)
+            req_params = {'date': date, 'classify': classify}
+
+        elif 'edit' in request_data:
+            req_params = {'id': _id}
 
         elif 'delete' in request_data:
-            util.delete_detail_row(row_id)
+            inout_detail_operation.del_row(_id)
 
-        redirect_url = get_url_view_list(date, classify)
+        redirect_url = base_util.URL.get_request_url(redirect_url, req_params)
         return redirect(redirect_url)  # "render"でもいいかと思ったが、リダイレクトしないとブラウザ側で再読み込みを行った場合にフォームの再送信が発生する。
 
     # 支出データ入力欄の設定を取得。その際に初期値データも送っている。
     form = DetailForm(initial=initial_value_dict)
+
+    # 画面表示する行数は固定
+    details = inout_detail_operation.get_some_records(DISPLAY_ROW_NUM)
 
     # Templateに送るデータの作成。
     context = {
@@ -82,30 +99,35 @@ def view_list(request):
     return render(request, 'kakeibo/view_list.html', context)
 
 
-def get_url_view_list(date, classify):
-    """
-    支出データ一覧画面のURLを取得する。引数に値が存在する場合はGETリクエストとしてパラメータを設定する。
-    :param date: 支出データ入力欄の[日付]項目の初期値。初期値を表示する場合のみ設定。
-    :param classify: 支出データ入力欄の[分類]項目の初期値。初期値を表示する場合のみ設定。
-    :return: 支出データ一覧画面のURL。
-    """
-    redirect_url = VIEW_LIST_URL
-
-    if date is None and classify is None:
-        return redirect_url
-
-    # GETリクエストとしてURLを作成する。
-    parameters = urlencode({'date': date, 'classify': classify})
-    return f'{redirect_url}?{parameters}'
-
-
-def set_initial_value(date, classify, initial_value_dict):
+def get_req_value(date, classify, row_id):
     """
     支出データ入力部の初期値を設定する。
     :param date: 支出データ入力欄の[日付]項目の初期値。
     :param classify: 支出データ入力欄の[分類]項目の初期値。
-    :param initial_value_dict: 初期値設定を格納するdictionaly変数。
-    :return: なし。
+    :param row_id: 選択したデータの行番号
+    :return: 初期値設定を格納するdictionary変数。
     """
-    initial_value_dict['date'] = date
-    initial_value_dict['classify'] = classify
+    req_value_dict = {}
+    if date is not None: req_value_dict['date'] = date
+    if classify is not None: req_value_dict['classify'] = classify
+    if row_id is not None: req_value_dict['row_id'] = row_id
+
+    return req_value_dict
+
+
+def get_row_value(inout_detail_operation, row_id):
+    """
+    引数の行番号のレコードを取得する。
+    :param inout_detail_operation: 収入支出詳細テーブル
+    :param row_id: 行番号
+    :return: 行データのdict
+    """
+    row = inout_detail_operation.get_row(row_id)
+    row_value = {}
+    if row is not None:
+        row_value['date'] = row.対象年月日
+        row_value['classify'] = row.収入支出分類コード
+        row_value['name'] = row.項目名
+        row_value['money'] = row.金額
+
+    return row_value

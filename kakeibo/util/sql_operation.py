@@ -1,8 +1,9 @@
 import os
 import mysite.util as base_util
+import kakeibo
 
 # 定数
-_SQL_DIR_PATH = os.getcwd() + '\\..\\kakeibo\\sql'  # SQLファイルが格納されているフォルダまでのパス
+_SQL_DIR_PATH = os.path.dirname(os.path.abspath(kakeibo.__file__)) + '\\sql'  # SQLファイルが格納されているフォルダまでのパス
 _ENCODING = 'utf-8'  # SQLファイルのエンコード
 
 

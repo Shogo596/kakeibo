@@ -1,4 +1,4 @@
-from kakeibo.models import 収入支出明細, 収入支出分類マスタ, 対象者マスタ, カード支出明細
+from kakeibo.models import 収入支出明細, 収入支出分類マスタ, 対象者マスタ, カード支出明細, 定例支出マスタ
 # import mysite.util as util
 from django.db.models.query import QuerySet
 import kakeibo.util.credit_card as cc
@@ -11,68 +11,14 @@ classify_master = 収入支出分類マスタ.objects.filter(削除フラグ='0'
 person_master = 対象者マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
 
 
-def add_upd_detail_row(date, classify, person, name, money, is_tax, upd_flg):
-    """
-    支出明細テーブルに支出データを更新する。
-    :param date: 対象年月日
-    :param classify: 収入支出分類コード
-    :param person: 対象者コード
-    :param name: 項目名
-    :param money: 金額
-    :param is_tax: 税込計算するかどうか
-    :param upd_flg: '0'→insert、'1'→update
-    :return: なし。
-    """
-    # 税込計算。入力された金額に税額を加える。
-    if is_tax is True:
-        money = money * TAX
-
-    if upd_flg == '1':
-        # defaults以外をキーとして、データがあればINSERT、データがなければdefaultで値を更新する。
-        収入支出明細.objects.update_or_create(
-            対象年月日=date,
-            収入支出分類コード=収入支出分類マスタ.objects.get(収入支出分類コード=classify),
-            対象者コード=対象者マスタ.objects.get(対象者コード=person),
-            項目名=name,
-            削除フラグ='0',
-            defaults={
-                '金額': money,
-            },
-        )
-    else:
-        収入支出明細.objects.create(
-            対象年月日=date,
-            収入支出分類コード=収入支出分類マスタ.objects.get(収入支出分類コード=classify),
-            対象者コード=対象者マスタ.objects.get(対象者コード=person),
-            項目名=name,
-            削除フラグ='0',
-            金額=money,
-        )
-
-
-def delete_table_rows(table_records):
-    """
-    任意のテーブルからレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
-    :param table_records: 任意のテーブル（QuerySet）。削除対象データのみ。
-    :return: なし。
-    """
-    # 削除フラグを更新する。
-    table_records.update(削除フラグ='1')
-
-
-def delete_detail_row(row_id):
-    """
-    :memo 上の関数と統合させたい。
-    支出明細テーブルから支出データレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
-    :param row_id: 削除する行番号。
-    :return: なし。
-    """
-    # 物理削除はやめた。
-    # detail_id = data['id']
-    # 収入支出明細.objects.filter(id=detail_id).delete()
-
-    # 削除フラグを更新する。
-    収入支出明細.objects.filter(id=row_id).update(削除フラグ='1')
+# def delete_table_rows(table_records):
+#     """
+#     任意のテーブルからレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
+#     :param table_records: 任意のテーブル（QuerySet）。削除対象データのみ。
+#     :return: なし。
+#     """
+#     # 削除フラグを更新する。
+#     table_records.update(削除フラグ='1')
 
 
 def get_classify_person_combobox(kotei_hendo_kubun):
@@ -164,11 +110,18 @@ class TableOperationBase:
     def __init__(self, master: QuerySet):
         self._records = master
 
+    def sort(self, sort_key):
+        self._records = self._records.order_by(sort_key)
+        return self
+
     def get_row(self, row_id):
         return self._records.filter(id=row_id).first()
 
     def get_all_records(self):
         return self._records.all()
+
+    def get_some_records(self, num):
+        return self._records.all()[:num]
 
     def get_records_using_dict(self, condition: dict):
         """
@@ -176,7 +129,121 @@ class TableOperationBase:
         :param condition: 検索条件
         :return: 取得結果
         """
-        return self._records.filter(**condition)
+        return self._records.filter(**condition).all()
+
+    def del_row(self, row_id):
+        """
+        引数で指定したidのデータレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
+        :param row_id: 削除する行番号。
+        :return: なし。
+        """
+        # 削除フラグを更新する。
+        self._records.filter(id=row_id).update(削除フラグ='1')
+
+    def del_all(self):
+        """
+        定義済みのデータレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
+        :return: なし。
+        """
+        # 削除フラグを更新する。
+        self._records.update(削除フラグ='1')
+
+
+class InoutDetailTableOperation(TableOperationBase):
+    """
+    収入支出明細テーブルの操作クラス
+    """
+    def __init__(self, inout_detail_master: QuerySet):
+        super().__init__(inout_detail_master)
+        self.__inout_detail_records = self._records
+
+    def get_row_filter(self, filter_dict: dict):
+        """
+        任意の項目をキーとしてフィルタしたレコード取得する。
+        :param filter_dict: フィルタする項目のdict
+        :return: フィルタ結果のレコード
+        """
+        temp_records: QuerySet = self.__inout_detail_records
+        for key, value in filter_dict.items():
+            if key == '収入支出分類コード': temp_records = temp_records.filter(収入支出分類コード=value)
+            if key == '対象者コード': temp_records = temp_records.filter(対象者コード=value)
+        return temp_records.first()
+
+    # def add_upd_row_(self, date, classify, person, name, money, is_tax, upd_flg):
+    #     """
+    #     支出明細テーブルに支出データを更新する。
+    #     :param date: 対象年月日
+    #     :param classify: 収入支出分類コード
+    #     :param person: 対象者コード
+    #     :param name: 項目名
+    #     :param money: 金額
+    #     :param is_tax: 税込計算するかどうか
+    #     :param upd_flg: '0'→insert、'1'→update
+    #     :return: なし。
+    #     """
+    #
+    #     # 税込計算
+    #     money = self.calc_tax(money, is_tax)
+    #
+    #     if upd_flg == '1':
+    #         # defaults以外をキーとして、データがあればINSERT、データがなければdefaultで値を更新する。
+    #         self.__inout_detail_records.update_or_create(
+    #             対象年月日=date,
+    #             収入支出分類コード=収入支出分類マスタ.objects.get(収入支出分類コード=classify),
+    #             対象者コード=対象者マスタ.objects.get(対象者コード=person),
+    #             項目名=name,
+    #             削除フラグ='0',
+    #             defaults={
+    #                 '金額': money,
+    #             },
+    #         )
+    #     else:
+    #         self.__inout_detail_records.create(
+    #             対象年月日=date,
+    #             収入支出分類コード=収入支出分類マスタ.objects.get(収入支出分類コード=classify),
+    #             対象者コード=対象者マスタ.objects.get(対象者コード=person),
+    #             項目名=name,
+    #             削除フラグ='0',
+    #             金額=money,
+    #         )
+
+    def add_upd_row(self, row_id, date, classify, person, name, money, is_tax):
+        """
+        支出明細テーブルに支出データを更新する。
+        :param row_id: 行番号
+        :param date: 対象年月日
+        :param classify: 収入支出分類コード
+        :param person: 対象者コード
+        :param name: 項目名
+        :param money: 金額
+        :param is_tax: 税込計算するかどうか
+        :return: なし。
+        """
+        # 税込計算
+        money = self.calc_tax(money, is_tax)
+
+        self.__inout_detail_records.update_or_create(
+            id=row_id,
+            defaults={
+                '対象年月日': date,
+                '収入支出分類コード': 収入支出分類マスタ.objects.get(収入支出分類コード=classify),
+                '対象者コード': 対象者マスタ.objects.get(対象者コード=person),
+                '項目名': name,
+                '金額': money,
+            },
+        )
+
+    @staticmethod
+    def calc_tax(money, is_tax):
+        """
+        税込計算。入力された金額に税額を加える。
+        :param money: 税込計算対象の金額
+        :param is_tax: 税込計算有無
+        :return: 税込計算後の金額
+        """
+        if is_tax is True:
+            money = money * TAX
+        return money
 
 
 class CardDetailTableOperation(TableOperationBase):
@@ -189,6 +256,13 @@ class CardDetailTableOperation(TableOperationBase):
 
     def get_month_records(self, yyyymm):
         return self.__card_detail_records.filter(支払月=yyyymm)
+
+    def get_row_filter(self, filter_dict: dict):
+        temp_records: QuerySet = self.__card_detail_records
+        for key, value in filter_dict.items():
+            if key == '収入支出分類コード': temp_records = temp_records.filter(収入支出分類コード=value)
+            if key == '対象者コード': temp_records = temp_records.filter(対象者コード=value)
+        return temp_records.first()
 
     def ins_rows(self, yyyymm, card_data_list: cc.CreditCardDataList):
         """

@@ -33,8 +33,7 @@
                 <div class="input-group">
                     <input type="text" id="csvfileCover" class="form-control" autocomplete="off" placeholder="csvファイルを選択...">
                     <span class="input-group-btn"><button type="button" class="btn btn-info" onclick="$('input[id=csvfile]').click();">選択</button></span>
-                    <!-- <span class="input-group-btn"><button type="button" class="btn btn-info" onclick="$('input[id=csvfile]').click();"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button></span> -->
-                    <span class="input-group-btn"><button type="submit" class="btn btn-info" name="import" value="取込">取込</button></span>
+                    <span class="input-group-btn"><button type="submit" class="btn btn-info" name="import" value="取込" onclick="return checkYM()">取込</button></span>
                 </div>
             </div>
         </div>
@@ -82,11 +81,24 @@
 
     </form>
 
-<!-- 上記でのcsvファイル取込部で使うjavascript。画面表示用のtextボックスからsubmit用のfileボックスに転送する。-->
 <script>
+  //上記でのCSVファイル取込部で使うjavascript。画面表示用のtextボックスからsubmit用のfileボックスに転送する。
   $('input[id=csvfile]').change(function() {
     $('#csvfileCover').val($(this).val().replace("C:\\fakepath\\", ""));
   });
+
+  //CSVファイル取り込み時に取り込み先年月を確認する。
+  function checkYM(){
+    var yyyymm = document.getElementById("id_yyyymm").value;
+    var yyyy = yyyymm.substring(0, 4)
+    var mm = yyyymm.substring(4, 6)
+    var checked = confirm(yyyy + "年" + mm + "月として取り込みます。");
+    if (checked == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 </script>
 
 {% endblock %}

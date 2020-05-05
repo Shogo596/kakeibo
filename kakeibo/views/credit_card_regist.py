@@ -26,8 +26,8 @@ def credit_card_regist(request):
     dt_now = base_util.datetime.now()
 
     # カード支出明細の取得
-    card_detail_master = util.カード支出明細.objects.filter(削除フラグ='0').order_by('id')
-    card_detail_operation = util.CardDetailTableOperation(card_detail_master)
+    card_detail = util.カード支出明細.objects.filter(削除フラグ='0').order_by('id')
+    card_detail_operation = util.CardDetailTableOperation(card_detail)
 
     # セッションデータの取得
     # セッション周りとかはいつか共通化したい。
@@ -68,7 +68,8 @@ def credit_card_regist(request):
             if 'import' in request_data:
 
                 # ブラウザで入力したcsvファイルの取得
-                file_data = TextIOWrapper(request.FILES['csvfile'].file, encoding='Shift_JIS')
+                # file_data = TextIOWrapper(request.FILES['csvfile'].file, encoding='Shift_JIS')
+                file_data = TextIOWrapper(request.FILES['csvfile'].file, encoding='utf-8-sig')
                 # csvデータを変数に格納
                 csv_file = csv.DictReader(file_data)
 
@@ -96,7 +97,7 @@ def credit_card_regist(request):
                 card_detail_operation.del_rows(del_card_data_list_from_formset)
 
     # 画面表示用にクレジットカードデータを取得
-    card_detail_records = card_detail_operation.get_month_records(yyyymm)
+    card_detail_records = card_detail_operation.sort('利用日').get_month_records(yyyymm)
     card_form_initial_data = get_card_formset_initial_data(card_detail_records)
 
     form_ymform = YMForm(initial={'yyyymm': yyyymm})

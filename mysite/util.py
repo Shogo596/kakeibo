@@ -2,6 +2,7 @@ from dateutil import relativedelta
 from datetime import datetime
 from django.db import connection
 from collections import namedtuple
+from urllib.parse import urlencode
 
 
 # 以下、それぞれクラス化したい。
@@ -166,3 +167,42 @@ class STR:
         :return: 挿入した文字列
         """
         return '{0}{1}{2}'.format(base_str[:point], ins_str, base_str[point:])
+
+
+############################################################################################
+# FormSet操作
+############################################################################################
+class FormSet:
+    @staticmethod
+    def set_disabled(formset, item_name):
+        """
+        formsetの指定項目に対してdisabledのフラグが立っていたら、その項目をdisabledにする。
+        :param formset: 対象のformset
+        :param item_name: disabledとする対象の項目名
+        :return: disabled設定後のformset
+        """
+        item_disabled_name = item_name + '_disabled'
+        for i in range(len(formset.forms)):
+            if formset.initial[i][item_disabled_name] == '1':
+                formset.forms[i].fields[item_name].widget.attrs['disabled'] = 'disabled'
+        return formset
+
+
+############################################################################################
+# URL操作
+############################################################################################
+class URL:
+    @staticmethod
+    def get_request_url(url, params_dict: dict):
+        """
+        引数をもとにURLを作成する。引数に値が存在する場合はGETリクエストとしてパラメータを設定する。
+        :param url: 遷移先のURL
+        :param params_dict: GETリクエストに設定するパラメータ
+        :return: GETリクエストのURL
+        """
+        if params_dict is None or len(params_dict) == 0:
+            return url
+
+        # GETリクエストとしてURLを作成する。
+        parameters = urlencode(params_dict)
+        return f'{url}?{parameters}'
