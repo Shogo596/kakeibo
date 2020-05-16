@@ -1,10 +1,24 @@
 {% extends 'kakeibo/base.html' %}
 
 {% block content %}
-    <h4>日別支出一覧画面</h4>
+    <h4>日別支出登録画面</h4>
+    <!-- 収支プルダウン制御部 -->
+    <form action="/kakeibo/" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="change_inout">
+
+        <div class="float-right">
+            <b>{{ inout_radio_form.check.label }}</b> :
+            {% for check in inout_radio_form.check %}
+            {{ check }}
+            {% endfor %}
+        </div>
+    </form>
+
     <!-- 支出データ入力部 -->
     <form action="/kakeibo/" method="post">
         {% csrf_token %}
+        <input type="hidden" name="form_name" value="submit_data">
         <!-- {{ form.as_table }} -->
         <!--
         {% for field in form %}
@@ -17,26 +31,26 @@
         <table class="table">
             <tr class="datetimepicker">
                 <td>
-                    日付:<br/>
-                    {{ form.date }}
+                    {{ detail_form.date.label }}:<br/>
+                    {{ detail_form.date }}
                 </td>
                 <td>
-                    分類:<br/>
-                    {{ form.classify }}
+                    {{ detail_form.classify_person.label }}:<br/>
+                    {{ detail_form.classify_person }}
                 </td>
                 <td>
-                    項目名:<br/>
-                    {{ form.name }}
+                    {{ detail_form.name.label }}:<br/>
+                    {{ detail_form.name }}
                 </td>
                 <td>
-                    金額:<br/>
-                    {{ form.money }}
+                    {{ detail_form.money.label }}:<br/>
+                    {{ detail_form.money }}
                 </td>
                 <td>
                     <label title="税込計算する場合はチェック！">
                         税<br/>
                         <!--<input type="checkbox" name="tax" value="1">-->
-                        {{ form.is_tax }}
+                        {{ detail_form.is_tax }}
                     </label>
                 </td>
                 <td>
@@ -44,7 +58,7 @@
                 </td>
             </tr>
         </table>
-    {{ form.row_id }}
+    {{ detail_form.row_id }}
     </form>
 
 

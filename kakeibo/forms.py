@@ -4,6 +4,14 @@ from .models import 収入支出分類マスタ, 対象者マスタ
 import bootstrap_datepicker_plus as datetimepicker
 import kakeibo.util.kakeibo_util as util
 
+# 定数
+# 「"収入支出区分_固定変動区分", 表示名称」で収支選択用のリスト作成
+CHOICE = [
+    ('0_0', '収入'),
+    ('1_0', '支出（固定費）'),
+    ('1_1', '支出（変動費）'),
+]
+
 
 ######################################################
 # ◆ファイル説明
@@ -16,17 +24,17 @@ class DetailForm(forms.Form):
     日ごとの支出データの入力欄の管理。
     以下、特筆すべき項目の説明。
     日付：カレンダー入力させる。
-    分類：支出分類マスタの項目からプルダウンにて入力させる。
+    分類：支出分類マスタと対象者マスタの項目からプルダウンにて入力させる。
     """
     # 支出分類マスタからプルダウン用のリストを作成。
-    classify_list = []
-    for object in 収入支出分類マスタ.objects.filter(削除フラグ='0', 固定変動区分='1').order_by('表示順序'):
-        classify_list.append((object.収入支出分類コード, object.収入支出分類名))
+    # classify_list = []
+    # for object in 収入支出分類マスタ.objects.filter(削除フラグ='0', 固定変動区分='1').order_by('表示順序'):
+    #     classify_list.append((object.収入支出分類コード, object.収入支出分類名))
 
     # 対象者マスタからプルダウン用のリストを作成。
-    person_list = []
-    for object in 対象者マスタ.objects.filter(削除フラグ='0').exclude(対象者コード='0000000000').order_by('表示順序'):
-        person_list.append((object.対象者コード, object.対象者名))
+    # person_list = []
+    # for object in 対象者マスタ.objects.filter(削除フラグ='0').exclude(対象者コード='0000000000').order_by('表示順序'):
+    #     person_list.append((object.対象者コード, object.対象者名))
 
     row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())
     # 日付項目は"datetimepicker"を利用してカレンダー入力を可能とする。
@@ -41,9 +49,30 @@ class DetailForm(forms.Form):
     # 分類はプルダウンにする。
     classify = forms.ChoiceField(label='分類', widget=forms.Select, choices=classify_list)
     person = forms.ChoiceField(label='対象者', widget=forms.Select, choices=person_list)
+    classify_person = forms.ChoiceField(label='分類', required=False, widget=forms.Select)
     name = forms.CharField(label='項目名', max_length=100)
     money = forms.IntegerField(label='金額')
     is_tax = forms.BooleanField(label='税', required=False, widget=forms.CheckboxInput())
+
+    def __init__(self, *args, **kwargs):
+        """
+        初期設定。項目「分類」の設定を行う。
+        :param args:
+        :param kwargs:
+        """
+
+        # Viewの引数から送られた独自データを取得する。
+        self.inout_value_dict: dict = kwargs.pop('inout_value_dict', {})
+        inout_kubun = self.inout_value_dict.get('inout_kubun', '1')
+        kotei_hendo_kubun = self.inout_value_dict.get('kotei_hendo_kubun', '1')
+
+        # 本来のinitを実行する。定型文。
+        super(DetailForm, self).__init__(*args, **kwargs)
+
+        # 「収入支出分類_対象者」のプルダウンを作成、設定する。
+        classify_person_combobox = util.ClassifyPersonOpe.get_classify_person_combobox(inout_kubun, kotei_hendo_kubun,
+                                                                                       False)
+        self.fields['classify_person'].choices = classify_person_combobox
 
 
 class RegularForm(forms.Form):
@@ -74,29 +103,33 @@ class YMForm(forms.Form):
     ]
     yyyymm = forms.CharField(label='年月', max_length=6, widget=forms.TextInput(attrs={'size': 6}))
     period = forms.IntegerField(label='期間', widget=forms.TextInput(attrs={'size': 2}))
-    # interval = forms.IntegerField(label='間隔', widget=forms.TextInput(attrs={'size': 2}))
     interval = forms.ChoiceField(label='分類', widget=forms.Select, choices=month_or_year_list)
 
 
 class InOutCheckForm(forms.Form):
-    # 「"収入支出区分_固定変動区分", 表示名称」でリスト作成
-    CHOICE = [
-        ('0_0', '収入'),
-        ('1_0', '支出（固定費）'),
-        ('1_1', '支出（変動費）'),
-    ]
+    """
+    収支の表示を制御するマルチチェックボックスのフォーム
+    """
     check = forms.MultipleChoiceField(label='収支表示内容', choices=CHOICE, required=True,
                                       widget=forms.CheckboxSelectMultiple(attrs={"onChange": 'submit();',
-                                                                                 "id": 'check',
-                                                                                 })
+                                                                                 "id": 'check', })
                                       )
+
+
+class InOutRadioForm(forms.Form):
+    """
+    収支の表示を制御するラジオボタンのフォーム
+    """
+    check = forms.ChoiceField(label='分類制御', choices=CHOICE, required=True,
+                              widget=forms.RadioSelect(attrs={"onChange": 'submit();', "id": 'check', })
+                              )
 
 
 class CardForm(forms.Form):
     """
     カード支出データ表示用のフォーム
     """
-    classify_person_combobox = util.get_classify_person_combobox(kotei_hendo_kubun='')
+    classify_person_combobox = util.ClassifyPersonOpe.get_classify_person_combobox('1', '', True)
 
     row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())
     payment_month = forms.CharField(label='支払月', max_length=6, required=False, widget=forms.HiddenInput())

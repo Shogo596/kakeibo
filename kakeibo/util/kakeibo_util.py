@@ -1,87 +1,99 @@
-from kakeibo.models import 収入支出明細, 収入支出分類マスタ, 対象者マスタ, カード支出明細, 定例支出マスタ
-# import mysite.util as util
+from kakeibo.models import 収入支出分類マスタ, 対象者マスタ, カード支出明細
 from django.db.models.query import QuerySet
 import kakeibo.util.credit_card as cc
 
 # 定数
 TAX = 1.1
 
-# マスタデータ
-classify_master = 収入支出分類マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
-person_master = 対象者マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
+
+############################################################################################
+# 家計簿のマスタデータ
+############################################################################################
+class MasterData:
+    # マスタデータ
+    classify_master = 収入支出分類マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
+    person_master = 対象者マスタ.objects.filter(削除フラグ='0').order_by('表示順序')
 
 
-# def delete_table_rows(table_records):
-#     """
-#     任意のテーブルからレコードを削除する。実態は削除フラグを"1"に更新しているだけ。
-#     :param table_records: 任意のテーブル（QuerySet）。削除対象データのみ。
-#     :return: なし。
-#     """
-#     # 削除フラグを更新する。
-#     table_records.update(削除フラグ='1')
-
-
-def get_classify_person_combobox(kotei_hendo_kubun):
+############################################################################################
+# 収入支出分類と対象者に関わるクラス群
+############################################################################################
+class ClassifyPersonOpe:
     """
-    コンボボックス表示用に「収入支出分類コード_対象者コード」のリストを作成する。
-    :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
-    :return: コンボボックス用のリスト
+    収入支出分類と対象者に関わる操作
     """
-    result = [('', '')]  # comboboxの先頭は空白に。
+    @staticmethod
+    def get_classify_person_combobox(inout_kubun, kotei_hendo_kubun, is_blank):
+        """
+        コンボボックス表示用に「収入支出分類コード_対象者コード」のリストを作成する。
+        :param inout_kubun: リストに含める収入支出区分を指定する。空の場合はすべての区分となる。
+        :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
+        :param is_blank: コンボボックスの先頭に空白項目を持たせるかどうか。
+        :return: コンボボックス用のリスト
+        """
+        result = []
 
-    classify_person_list = get_classify_person_list(kotei_hendo_kubun)
-    for classify_person_row in classify_person_list:
-        classify_person_row: ClassifyPersonData = classify_person_row
-        result.append((classify_person_row.classify + '_' + classify_person_row.person,
-                       classify_person_row.get_classify_person_name()))
+        # 空白フラグがTrueの場合はcomboboxの先頭を空白にする。
+        if is_blank:
+            result.append(('', ''))
 
-    return result
+        # コンボボックスのリスト作成
+        classify_person_list = ClassifyPersonOpe.get_classify_person_list(inout_kubun, kotei_hendo_kubun)
+        for classify_person_row in classify_person_list:
+            classify_person_row: ClassifyPersonData = classify_person_row
+            result.append((classify_person_row.classify + '_' + classify_person_row.person,
+                           classify_person_row.get_classify_person_name()))
 
+        return result
 
-def get_classify_person_list(kotei_hendo_kubun):
-    """
-    収入支出分類と対象者のペアをリストで返す。
-    :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
-    :return: ペアのリスト
-    """
-    result = []
+    @staticmethod
+    def get_classify_person_list(inout_kubun, kotei_hendo_kubun):
+        """
+        収入支出分類と対象者のペアをリストで返す。
+        :param inout_kubun: リストに含める収入支出区分を指定する。空の場合はすべての区分となる。
+        :param kotei_hendo_kubun: リストに含める固定変動区分を指定する。空の場合はすべての区分となる。
+        :return: ペアのリスト
+        """
+        result = []
 
-    classify_records = classify_master
-    person_records = person_master
+        # マスタデータの取得
+        classify_records = MasterData.classify_master
+        person_records = MasterData.person_master
 
-    # 固定変動区分で絞り込み
-    if kotei_hendo_kubun != '':
-        classify_records = classify_master.filter(固定変動区分=kotei_hendo_kubun)
+        # 収入支出区分で絞り込み
+        if inout_kubun != '':
+            classify_records = classify_records.filter(収入支出区分=inout_kubun)
 
-    # 変動費から表示するように逆順にする。
-    classify_records = classify_records.order_by('固定変動区分').reverse()
+        # 固定変動区分で絞り込み
+        if kotei_hendo_kubun != '':
+            classify_records = classify_records.filter(固定変動区分=kotei_hendo_kubun)
 
-    for classify_row in classify_records:
-        # 世帯全員以外の対象者を取得する。
-        person_records = person_records.exclude(対象者コード=対象者マスタ.get_all_member_code())
-        for person_row in person_records:
+        # 変動費から表示するように逆順にする。
+        classify_records = classify_records.order_by('固定変動区分', '収入支出区分').reverse()
 
-            if classify_row.対象者区別有無 == '1':
-                classify_person_data = ClassifyPersonData(classify_row.収入支出分類コード, person_row.対象者コード)
-            else:
-                classify_person_data = ClassifyPersonData(classify_row.収入支出分類コード, 対象者マスタ.get_all_member_code())
+        for classify_row in classify_records:
+            # 世帯全員以外の対象者を取得する。
+            person_records = person_records.exclude(対象者コード=対象者マスタ.get_all_member_code())
+            for person_row in person_records:
 
-            result.append(classify_person_data)
+                if classify_row.対象者区別有無 == '1':
+                    classify_person_data = ClassifyPersonData(classify_row.収入支出分類コード, person_row.対象者コード)
+                else:
+                    classify_person_data = ClassifyPersonData(classify_row.収入支出分類コード, 対象者マスタ.get_all_member_code())
 
-            # 区別しない場合は対象者でループする必要がないからbreak
-            if classify_row.対象者区別有無 != '1':
-                break
+                result.append(classify_person_data)
 
-    return result
+                # 区別しない場合は対象者でループする必要がないからbreak
+                if classify_row.対象者区別有無 != '1':
+                    break
+
+        return result
 
 
 class ClassifyPersonData:
     """
     収入支出分類と対象者をペアで格納するクラス
     """
-    classify = ''
-    person = ''
-
     def __init__(self, classify, person):
         self.classify = classify
         self.person = person
@@ -91,8 +103,9 @@ class ClassifyPersonData:
         収入支出分類と対象者のペアの名前を返す。
         :return: ペア
         """
-        classify_row = classify_master.filter(収入支出分類コード=self.classify)[0]
-        person_row = person_master.filter(対象者コード=self.person)[0]
+
+        classify_row = MasterData.classify_master.filter(収入支出分類コード=self.classify)[0]
+        person_row = MasterData.person_master.filter(対象者コード=self.person)[0]
 
         result = classify_row.収入支出分類名
 
@@ -103,6 +116,9 @@ class ClassifyPersonData:
         return result
 
 
+############################################################################################
+# 家計簿系テーブル操作
+############################################################################################
 class TableOperationBase:
     """
     テーブル操作の基底クラス
