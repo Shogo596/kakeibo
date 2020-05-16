@@ -95,3 +95,30 @@ class PeriodInoutMoney(SqlFileClassBase):
         ]
 
         return Operation.execute(self._file_name, self._params)
+
+
+class PeriodClassifyInoutMoney(SqlFileClassBase):
+    _FILE_NAME = 'period_classify_inout_money.sql'
+    start_ym = ''
+    end_ym = ''
+    in_out_kubun = ''
+    kotei_hendo_kubun = ''
+
+    def __init__(self):
+        self._file_name = self._FILE_NAME
+
+    def set_params(self, start_ym, end_ym, in_out_kubun, kotei_hendo_kubun):
+        self.start_ym = start_ym
+        self.end_ym = end_ym
+        self.in_out_kubun = in_out_kubun
+        self.kotei_hendo_kubun = kotei_hendo_kubun
+
+    def execute(self):
+        self._params = [
+            self.start_ym,
+            self.end_ym,
+            self.in_out_kubun,
+            self.kotei_hendo_kubun,
+        ]
+
+        return Operation.execute(self._file_name, self._params)

@@ -1,0 +1,42 @@
+{% extends 'kakeibo/base.html' %}
+{% load static %}
+
+{% block content %}
+    <h4>分類期間集計結果表示画面</h4>
+    <!-- ページ移動部 -->
+    <form action="{% url 'Kakeibo:display_classify_period_total' %}" method="post">
+
+        <!-- form内での固有記載 -->
+        {% csrf_token %}
+        <input type="hidden" name="form_name" value="trans_page">
+
+        <div class="float-right">
+            {{ ymform.yyyymm }}から{{ ymform.period }}ヶ月間を{{ ymform.interval }}間隔で表示
+            <input type="submit" name="change" value="変更">
+            <input type="submit" name="back" value="前">
+            <input type="submit" name="next" value="次">
+        </div>
+    </form>
+
+    <hr/>
+
+    <!-- 折れ線グラフ表示部 -->
+    <!-- 以下の構成をコピーすることで他のTemplateでも利用可能  -->
+    <canvas id="LineChart"></canvas>
+    <script>
+        //全体的な表示設定
+        var strTitle = '{{ line_chart_data.title }}';
+        var arrLabels = [{% for label in line_chart_data.labels %}'{{ label }}',{% endfor %}];
+
+        //折れ線グラフのY軸設定
+        var numLineMax = {{ line_chart_data.lineMax }};
+        var numLineMin = {{ line_chart_data.lineMin }};
+        var numLineStepSize = {{ line_chart_data.lineStepSize }};
+
+        //折れ線グラフのデータ設定
+        var arrLineNames = [{% for lineName in line_chart_data.lineNames %}'{{ lineName }}',{% endfor %}];
+        var arrLineDatasets = {{ line_chart_data.lineDatasets }};
+    </script>
+    <script type="text/javascript" src="{% static 'js/line_chart.js' %}"></script>
+
+{% endblock %}

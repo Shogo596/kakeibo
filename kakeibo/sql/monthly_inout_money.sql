@@ -1,8 +1,6 @@
 /*
  * 【収入支出分類データ抽出クエリ】
  * パラメータの範囲で指定した期間の分類ごとの合計収入支出金額を抽出する。
- * 収入支出区分や固定変動区分の指定も可能。
- * 対象テーブルは、支出明細とカード支出明細。
  */
 
 -- 変数宣言
@@ -17,53 +15,17 @@ set @kotei_hendo_kubun = %s;	-- 抽出対象の固定変動区分（カンマ区
 -- set @in_out_kubun = '1';
 -- set @kotei_hendo_kubun = '0,1';
 
+-- 期間分類集計の一時テーブルを作成する。
+call create_temp_period_classify_total(@ym_start, @ym_end, @in_out_kubun, @kotei_hendo_kubun);
+
+-- 収入支出分類で集計する。
 select
-	union_expense.収入支出分類コード,
-	union_expense.収入支出分類名,
-	sum(union_expense.金額) as 合計金額
-from (
-	select
-		sbm.収入支出分類コード ,
-		sbm.収入支出分類名,
-        sbm.表示順序,
-		tm.対象者コード,
-		tm.対象者名,
-		sm.金額
-	from mysite.kakeibo_収入支出明細 as sm
-		left outer join mysite.kakeibo_収入支出分類マスタ as sbm
-			on sm.収入支出分類コード_id = sbm.収入支出分類コード
-		left outer join mysite.kakeibo_対象者マスタ as tm
-			on sm.対象者コード_id = tm.対象者コード
-	where
-		sm.対象年月日 between concat(@ym_start, '00') and concat(@ym_end, '99')
-    and sm.削除フラグ = '0'
-    -- and sbm.収入支出区分 in (@in_out_kubun)
-    -- and sbm.固定変動区分 in (@kotei_hendo_kubun)
-    and find_in_set(sbm.収入支出区分, @in_out_kubun)
-    and find_in_set(sbm.固定変動区分, @kotei_hendo_kubun)
-	union all
-	select
-		sbm.収入支出分類コード,
-		sbm.収入支出分類名,
-		tm.対象者コード,
-		tm.対象者名,
-        sbm.表示順序,
-		csm.利用金額 as 金額
-	from mysite.kakeibo_カード支出明細 as csm
-		left outer join mysite.kakeibo_収入支出分類マスタ as sbm
-			on csm.収入支出分類コード_id = sbm.収入支出分類コード
-		left outer join mysite.kakeibo_対象者マスタ as tm
-			on csm.対象者コード_id = tm.対象者コード
-	where
-		csm.支払月 between @ym_start and @ym_end
-    and find_in_set(sbm.収入支出区分, @in_out_kubun)
-    and find_in_set(sbm.固定変動区分, @kotei_hendo_kubun)
-	and	ifnull(csm.収入支出分類コード_id, '') <> ''
-	and	ifnull(csm.対象者コード_id, '') <> ''
-    and csm.削除フラグ = '0'
-) as union_expense
+	収入支出分類コード,
+	収入支出分類名,
+	sum(合計金額) as 合計金額
+from 期間分類集計
 group by
-	union_expense.収入支出分類コード
+	収入支出分類コード
 order by
-	cast(union_expense.表示順序 as SIGNED)
+	cast(収入支出分類表示順序 as SIGNED)
 ;

@@ -81,7 +81,7 @@ class YMForm(forms.Form):
 class InOutCheckForm(forms.Form):
     # 「"収入支出区分_固定変動区分", 表示名称」でリスト作成
     CHOICE = [
-        ('0_1', '収入'),
+        ('0_0', '収入'),
         ('1_0', '支出（固定費）'),
         ('1_1', '支出（変動費）'),
     ]
