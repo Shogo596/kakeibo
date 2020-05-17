@@ -3,7 +3,7 @@
 {% block content %}
     <h4>日別支出登録画面</h4>
     <!-- 収支プルダウン制御部 -->
-    <form action="/kakeibo/" method="post">
+    <form action="{% url 'Kakeibo:view_list' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="form_name" value="change_inout">
 
@@ -16,7 +16,7 @@
     </form>
 
     <!-- 支出データ入力部 -->
-    <form action="/kakeibo/" method="post">
+    <form action="{% url 'Kakeibo:view_list' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="form_name" value="submit_data">
         <!-- {{ form.as_table }} -->
@@ -78,8 +78,10 @@
             <td>{{ detail.項目名 }}</td>
             <td>{{ detail.金額 }}</td>
             <td>
-                <form action="/kakeibo/" method="post">
+                <form action="{% url 'Kakeibo:view_list' %}" method="post">
                     {% csrf_token %}
+                    <input type="hidden" name="form_name" value="delete_data">
+
                     <input type="submit" name="edit" value="編集">
                     /
                     <input type="submit" name="delete" value="削除">

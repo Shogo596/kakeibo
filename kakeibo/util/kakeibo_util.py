@@ -1,4 +1,4 @@
-from kakeibo.models import 収入支出分類マスタ, 対象者マスタ, カード支出明細
+from kakeibo.models import 収入支出明細, 収入支出分類マスタ, 対象者マスタ, 定例支出マスタ, カード支出明細
 from django.db.models.query import QuerySet
 import kakeibo.util.credit_card as cc
 
@@ -183,7 +183,7 @@ class InoutDetailTableOperation(TableOperationBase):
         for key, value in filter_dict.items():
             if key == '収入支出分類コード': temp_records = temp_records.filter(収入支出分類コード=value)
             if key == '対象者コード': temp_records = temp_records.filter(対象者コード=value)
-        return temp_records.first()
+        return temp_records
 
     # def add_upd_row_(self, date, classify, person, name, money, is_tax, upd_flg):
     #     """
@@ -278,7 +278,7 @@ class CardDetailTableOperation(TableOperationBase):
         for key, value in filter_dict.items():
             if key == '収入支出分類コード': temp_records = temp_records.filter(収入支出分類コード=value)
             if key == '対象者コード': temp_records = temp_records.filter(対象者コード=value)
-        return temp_records.first()
+        return temp_records
 
     def ins_rows(self, yyyymm, card_data_list: cc.CreditCardDataList):
         """

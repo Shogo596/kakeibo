@@ -38,18 +38,18 @@ class DetailForm(forms.Form):
 
     row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())
     # 日付項目は"datetimepicker"を利用してカレンダー入力を可能とする。
-    date = forms.CharField(widget=datetimepicker.DatePickerInput(
-        format='%Y%m%d',
-        options={
-            'locale': 'ja',
-            'dayViewHeaderFormat': 'YYYY年 MMMM',
-        },
-        attrs={'autofocus': 'autofocus'}
-    ), label='日付')
-    # 分類はプルダウンにする。
-    classify = forms.ChoiceField(label='分類', widget=forms.Select, choices=classify_list)
-    person = forms.ChoiceField(label='対象者', widget=forms.Select, choices=person_list)
-    classify_person = forms.ChoiceField(label='分類', required=False, widget=forms.Select)
+    date = forms.CharField(label='日付')
+    # date = forms.CharField(widget=datetimepicker.DatePickerInput(
+    #     format='%Y%m%d',
+    #     options={
+    #         'locale': 'ja',
+    #         'dayViewHeaderFormat': 'YYYY年 MMMM',
+    #     },
+    #     attrs={'autofocus': 'autofocus'}
+    # ), label='日付')
+    # classify = forms.ChoiceField(label='分類', widget=forms.Select, choices=classify_list)
+    # person = forms.ChoiceField(label='対象者', widget=forms.Select, choices=person_list)
+    classify_person = forms.ChoiceField(label='分類', required=False, widget=forms.Select)  # プルダウンの中身はinitで作成。
     name = forms.CharField(label='項目名', max_length=100)
     money = forms.IntegerField(label='金額')
     is_tax = forms.BooleanField(label='税', required=False, widget=forms.CheckboxInput())
@@ -73,6 +73,14 @@ class DetailForm(forms.Form):
         classify_person_combobox = util.ClassifyPersonOpe.get_classify_person_combobox(inout_kubun, kotei_hendo_kubun,
                                                                                        False)
         self.fields['classify_person'].choices = classify_person_combobox
+        self.fields['date'].widget = datetimepicker.DatePickerInput(
+            format='%Y%m%d',
+            options={
+                'locale': 'ja',
+                'dayViewHeaderFormat': 'YYYY年 MMMM',
+            },
+            attrs={'autofocus': 'autofocus'}
+        )
 
 
 class RegularForm(forms.Form):

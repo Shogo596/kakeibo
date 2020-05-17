@@ -140,32 +140,43 @@ def get_regular_data_list(classify_records, person_records, regular_records, ino
             # データ取得のフィルタ条件
             filter_dict = {'収入支出分類コード': regular_form_data.classify, '対象者コード': regular_form_data.person}
 
-            # 対象の定例支出項目がすでに収入支出明細テーブルに存在する場合は取得。対象年月日と金額を取得する。
-            detail_row = inout_detail_operation.get_row_filter(filter_dict)
+            # 対象の定例支出項目がすでに収入支出明細テーブルに存在する場合は取得。
+            detail_rows = inout_detail_operation.get_row_filter(filter_dict)
+            # カード支出明細（クレジットカード）のデータがあれば取得する。
+            card_detail_rows = card_detail_operation.get_row_filter(filter_dict)
 
-            # 収入支出明細テーブルから行取得できたか判定。取得できたら以下取得。
-            # できない場合、定例支出マスタにレコードがあれば金額を取得する。
-            if detail_row is not None:
-                regular_form_data.date = detail_row.対象年月日
-                regular_form_data.money = detail_row.金額
-            else:
+            # 収入支出明細テーブルから行取得できたか判定。取得できていたらそれを表示。
+            # この画面から登録していないデータが存在する場合は画面をグレーアウトして更新不可にする。
+            # 取得できなかった場合は定例支出マスタにレコードがあれば金額を取得する。
+            is_registed = False  # 画面表示するデータがすでにテーブルに登録されているか。以下の処理で判定する。
+
+            # 収入支出明細からデータを取得
+            for detail_row in detail_rows:
+                is_registed = True
+                regular_form_data.money += detail_row.金額
+                # 年月日の末尾2桁が"00"でなければこの画面で登録したデータでないためグレーアウトする。
+                if not detail_row.対象年月日[6:] == '00':
+                    regular_form_data.money_disabled = '1'
+
+            # カード支出明細からデータを取得。
+            for card_detail_row in card_detail_rows:
+                is_registed = True
+                regular_form_data.money += card_detail_row.利用金額
+                # カード支出明細から登録したデータなのでグレーアウトする。
+                regular_form_data.money_disabled = '1'
+
+            # 上記でデータが取得できなかった場合は定例支出マスタからデフォルト値を取得する。
+            if not is_registed:
                 # 定例支出マスタから取得
                 regular_rows = regular_records\
                     .filter(収入支出分類コード=regular_form_data.classify, 対象者コード=regular_form_data.person)
 
                 # 定例支出マスタに複数金額が存在する場合はすべて合算。
                 for regular_row in regular_rows:
-
                     # 有効月のチェックをして対象であれば金額を取得。
                     int_mm = int(yyyymm[4:])
                     if regular_row.有効月[int_mm - 1] == '1':
                         regular_form_data.money += regular_row.金額
-
-            # カード支出明細（クレジットカード）のデータはdisabledとする。
-            card_detail_row = card_detail_operation.get_row_filter(filter_dict)
-            if card_detail_row is not None:
-                regular_form_data.money = card_detail_row.利用金額
-                regular_form_data.money_disabled = '1'
 
             # 画面初期表示用にハッシュ化してListに突っ込む。
             regular_data = {

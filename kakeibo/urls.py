@@ -1,12 +1,15 @@
 from django.urls import path
+from django.views.generic.base import RedirectView
 from . import views
 
 # mysite.urlsとの調整を行う。すべてのURLにkakeiboがあるのはおかしいかも。
 app_name = 'Kakeibo'
 urlpatterns = [
     # 日別支出一覧画面への遷移
-    path('', views.view_list, name='top'),
-    path('kakeibo/', views.view_list, name='kakeibo_top'),
+    # path('', views.view_list, name='top'),
+    path('', RedirectView.as_view(url='/kakeibo/view_list/', permanent=False), name='top'),
+    # path('kakeibo/', views.view_list, name='kakeibo_top'),
+    path('kakeibo/', RedirectView.as_view(url='/kakeibo/view_list/', permanent=False), name='kakeibo_top'),
     path('kakeibo/view_list/', views.view_list, name='view_list'),
 
     # 例月支出登録画面への遷移
