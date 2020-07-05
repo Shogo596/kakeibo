@@ -31,21 +31,61 @@
                 <th>金額</th>
             </tr>
             {% for form in regular_data_list %}
-            <tr>
-                <td>{{ form.form_name.value }}</td>
-                <td>{{ form.money }}</td>
-                {{ form.date }}
-                {{ form.classify_code }}
-                {{ form.person_code }}
-            </tr>
+                <tr>
+                    <td>{{ form.form_name.value }}</td>
+                    <td>{{ form.money }}</td>
+                    {{ form.row_id }}
+                    {{ form.date }}
+                    {{ form.classify_code }}
+                    {{ form.person_code }}
+                    {{ form.money_define }}
+                    {{ form.money_disabled }}
+                </tr>
             {% endfor %}
         </table>
 
         <div class="pull-right">
-            <input type="submit" name="regist" value="登録">
+            <input type="submit" name="regist" value="登録" onclick="return equalsInputAndDefine()">
             /
             <input type="submit" name="delete" value="削除">
         </div>
 
     </form>
+
+<script>
+    function equalsInputAndDefine(){
+        var errorFlag = false;
+        var errorList = [];
+
+        var input;
+        {% for form in regular_data_list %}
+            input = document.getElementById("{{ form.money.auto_id }}").value;
+            define = {{ form.money_define.value }}
+            if(define != 0 && input != define){
+                errorFlag = true;
+                errorList.push({"name": "{{ form.form_name.value }}",
+                                "input": input,
+                                "define": define
+                                });
+            }
+        {% endfor %}
+
+        var errorHash;
+        var checked = true;
+        if(errorFlag){
+            var message = "以下の値が設定値と異なりますが問題ありませんか？\n\n"
+            for (var i=0; i < errorList.length; i++){
+                errorHash = errorList[i]
+                message += "・"
+                message += errorHash["name"] + " → ";
+                message += "定義値:" + errorHash["define"] + ", ";
+                message += "入力値:" + errorHash["input"] + "\n";
+            }
+
+            checked = confirm(message);
+        }
+            return checked;
+    }
+</script>
+
 {% endblock %}

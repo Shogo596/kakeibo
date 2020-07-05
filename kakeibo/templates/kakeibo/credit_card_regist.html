@@ -92,8 +92,8 @@
   //CSVファイル取り込み時に取り込み先年月を確認する。
   function checkYM(){
     var yyyymm = document.getElementById("hidden_yyyymm").value;
-    var yyyy = yyyymm.substring(0, 4)
-    var mm = yyyymm.substring(4, 6)
+    var yyyy = yyyymm.substring(0, 4);
+    var mm = yyyymm.substring(4, 6);
     var checked = confirm(yyyy + "年" + mm + "月として取り込みます。");
     if (checked == true) {
       return true;

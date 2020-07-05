@@ -64,6 +64,7 @@ def regist_regular_expense(request):
                 cleaned_data = regular_form.cleaned_data
 
                 # 登録時に使用する項目の取得
+                row_id = cleaned_data.get('row_id')
                 date = cleaned_data.get('date')
                 classify = cleaned_data.get('classify_code')
                 person = cleaned_data.get('person_code')
@@ -76,7 +77,8 @@ def regist_regular_expense(request):
 
                 # 収入支出明細への登録。disabled項目（カード支出明細に登録されているデータ）は登録しない。
                 if money_disabled != '1':
-                    inout_detail_operation.add_upd_row(None, date, classify, person, name, money, tax)
+                    row_id = None if row_id == 0 else row_id
+                    inout_detail_operation.add_upd_row(row_id, date, classify, person, name, money, tax)
 
         # 削除ボタン押下時処理
         if 'delete' in request.POST:
@@ -129,6 +131,7 @@ def get_regular_data_list(classify_records, person_records, regular_records, ino
             regular_form_data.classify = classify_row.収入支出分類コード
             regular_form_data.person = '0000000000'
             regular_form_data.money = 0
+            regular_form_data.money_define = 0
             regular_form_data.money_disabled = '0'
 
             # 対象者区別有無が"1"だったら一部編集
@@ -154,8 +157,10 @@ def get_regular_data_list(classify_records, person_records, regular_records, ino
             for detail_row in detail_rows:
                 is_registed = True
                 regular_form_data.money += detail_row.金額
-                # 年月日の末尾2桁が"00"でなければこの画面で登録したデータでないためグレーアウトする。
-                if not detail_row.対象年月日[6:] == '00':
+                # 年月日の末尾2桁が"00"であればidを取得する、そうでなｋればこの画面で登録したデータでないためグレーアウトする。
+                if detail_row.対象年月日[6:] == '00':
+                    regular_form_data.row_id = detail_row.id
+                else:
                     regular_form_data.money_disabled = '1'
 
             # カード支出明細からデータを取得。
@@ -165,26 +170,33 @@ def get_regular_data_list(classify_records, person_records, regular_records, ino
                 # カード支出明細から登録したデータなのでグレーアウトする。
                 regular_form_data.money_disabled = '1'
 
-            # 上記でデータが取得できなかった場合は定例支出マスタからデフォルト値を取得する。
-            if not is_registed:
-                # 定例支出マスタから取得
-                regular_rows = regular_records\
-                    .filter(収入支出分類コード=regular_form_data.classify, 対象者コード=regular_form_data.person)
+            # 定例支出マスタからデフォルト値を取得する。
+            regular_rows = regular_records\
+                .filter(収入支出分類コード=regular_form_data.classify, 対象者コード=regular_form_data.person)
 
-                # 定例支出マスタに複数金額が存在する場合はすべて合算。
-                for regular_row in regular_rows:
-                    # 有効月のチェックをして対象であれば金額を取得。
-                    int_mm = int(yyyymm[4:])
-                    if regular_row.有効月[int_mm - 1] == '1':
-                        regular_form_data.money += regular_row.金額
+            # 定例支出マスタに複数金額が存在する場合はすべて合算。
+            sum_monery = 0
+            for regular_row in regular_rows:
+                # 有効月のチェックをして対象であれば金額を取得。
+                int_mm = int(yyyymm[4:])
+                if regular_row.有効月[int_mm - 1] == '1':
+                    sum_monery += regular_row.金額
+
+            # 収入支出明細とカード支出明細から値を取得できていない場合は定例支出マスタの値を設定する。
+            # ただし、「money_define」はエラーチェック用なので無条件で設定。
+            if not is_registed:
+                regular_form_data.money = sum_monery
+            regular_form_data.money_define = sum_monery
 
             # 画面初期表示用にハッシュ化してListに突っ込む。
             regular_data = {
+                'row_id': regular_form_data.row_id,
                 'form_name': regular_form_data.form_name,
                 'date': regular_form_data.date,
                 'classify_code': regular_form_data.classify,
                 'person_code': regular_form_data.person,
                 'money': regular_form_data.money,
+                'money_define': regular_form_data.money_define,
                 'money_disabled': regular_form_data.money_disabled,
             }
             result.append(regular_data)
@@ -197,9 +209,11 @@ def get_regular_data_list(classify_records, person_records, regular_records, ino
 
 
 class RegularFormData:
+    row_id = 0
     form_name = ''
     date = ''
     classify_code = ''
     person_code = ''
     money = 0
+    money_define = 0
     money_disabled = ''

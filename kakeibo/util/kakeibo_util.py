@@ -1,5 +1,7 @@
-from kakeibo.models import 収入支出明細, 収入支出分類マスタ, 対象者マスタ, 定例支出マスタ, カード支出明細
 from django.db.models.query import QuerySet
+from django.utils import timezone
+
+from kakeibo.models import 収入支出明細, 収入支出分類マスタ, 対象者マスタ, 定例支出マスタ, カード支出明細
 import kakeibo.util.credit_card as cc
 
 # 定数
@@ -154,7 +156,7 @@ class TableOperationBase:
         :return: なし。
         """
         # 削除フラグを更新する。
-        self._records.filter(id=row_id).update(削除フラグ='1')
+        self._records.filter(id=row_id).update(削除フラグ='1', 更新年月日=timezone.now())
 
     def del_all(self):
         """
@@ -162,7 +164,7 @@ class TableOperationBase:
         :return: なし。
         """
         # 削除フラグを更新する。
-        self._records.update(削除フラグ='1')
+        self._records.update(削除フラグ='1', 更新年月日=timezone.now())
 
 
 class InoutDetailTableOperation(TableOperationBase):
@@ -287,7 +289,7 @@ class CardDetailTableOperation(TableOperationBase):
         :param card_data_list: insertデータの中身
         """
         del_records = self.get_month_records(yyyymm)
-        del_records.update(削除フラグ='1')
+        del_records.update(削除フラグ='1', 更新年月日=timezone.now())
 
         for card_data in card_data_list.get_data_list():
             card_data: cc.CreditCardData = card_data

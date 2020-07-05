@@ -87,12 +87,15 @@ class RegularForm(forms.Form):
     """
     例月支出データの表示フォーム
     """
+    row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())
     form_name = forms.CharField(label='フォーム名', required=False)
     date = forms.CharField(max_length=8, label='対象年月日', required=False, widget=forms.HiddenInput())
     classify_code = forms.CharField(max_length=10, label='収入支出分類コード', required=False, widget=forms.HiddenInput())
     person_code = forms.CharField(max_length=10, label='対象者コード', required=False, widget=forms.HiddenInput())
     money = forms.IntegerField(label='金額')
-    # ↓'1'の場合は「金額」項目をdisabledにする。
+    # エラーチェック用
+    money_define = forms.IntegerField(label='デフォルト金額', required=False, widget=forms.HiddenInput())
+    # 値が'1'の場合は「金額」項目をdisabledにする。
     money_disabled = forms.CharField(max_length=1, label='金額非表示有無', required=False, widget=forms.HiddenInput())
 
 

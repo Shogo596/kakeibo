@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 
 ######################################################
@@ -66,7 +65,7 @@ class 定例支出マスタ(models.Model):
     有効月 = models.CharField(max_length=12, blank=True, null=True)
     金額 = models.IntegerField(blank=True, null=True)
     備考 = models.CharField(max_length=100, blank=True, null=True)
-    作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    作成年月日 = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
     objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
@@ -91,7 +90,7 @@ class 支出基本(models.Model):
     開始年月 = models.CharField(default='000000', unique=True, max_length=6, blank=True, null=True)
     終了年月 = models.CharField(default='999999', max_length=6, blank=True, null=True)
     金額 = models.IntegerField(blank=True, null=True)
-    作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    作成年月日 = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
     objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
@@ -110,7 +109,7 @@ class 収入支出明細(models.Model):
     対象者コード = models.ForeignKey(対象者マスタ, on_delete=models.PROTECT, default='0000000000', blank=True, null=True)
     項目名 = models.CharField(max_length=100, blank=True, null=True)
     金額 = models.IntegerField(blank=True, null=True)
-    作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    作成年月日 = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
     objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
@@ -136,7 +135,7 @@ class カード支出明細(models.Model):
     収入支出分類コード = models.ForeignKey(収入支出分類マスタ, on_delete=models.PROTECT, blank=True, null=True)
     対象者コード = models.ForeignKey(対象者マスタ, on_delete=models.PROTECT, blank=True, null=True)
     備考 = models.CharField(max_length=100, blank=True, null=True)
-    作成年月日 = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    作成年月日 = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     更新年月日 = models.DateTimeField(auto_now=True, blank=True, null=True)
     削除フラグ = models.CharField(default='0', max_length=1, blank=True, null=True)
     objects = models.Manager()  # PyCharmの警告対策に必ず記載しておく。
