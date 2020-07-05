@@ -8,9 +8,11 @@
         <!-- form内での固有記載 -->
         {% csrf_token %}
         <input type="hidden" name="form_name" value="trans_page">
+        <input type="hidden" id="hidden_yyyymm" value="{{ ymform.yyyymm.value }}">
 
         <div class="float-right">
             {{ ymform.yyyymm }}
+            <!-- {{ ymform.yyyymm.as_hidden }} -->
             <input type="submit" name="change" value="移動">
             <input type="submit" name="back" value="前月">
             <input type="submit" name="next" value="次月">
@@ -89,7 +91,7 @@
 
   //CSVファイル取り込み時に取り込み先年月を確認する。
   function checkYM(){
-    var yyyymm = document.getElementById("id_yyyymm").value;
+    var yyyymm = document.getElementById("hidden_yyyymm").value;
     var yyyy = yyyymm.substring(0, 4)
     var mm = yyyymm.substring(4, 6)
     var checked = confirm(yyyy + "年" + mm + "月として取り込みます。");
@@ -99,6 +101,7 @@
       return false;
     }
   }
+
 </script>
 
 {% endblock %}
