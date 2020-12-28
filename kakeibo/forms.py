@@ -38,15 +38,15 @@ class DetailForm(forms.Form):
 
     row_id = forms.IntegerField(label='行番号', required=False, widget=forms.HiddenInput())
     # 日付項目は"datetimepicker"を利用してカレンダー入力を可能とする。
-    date = forms.CharField(label='日付')
-    # date = forms.CharField(widget=datetimepicker.DatePickerInput(
-    #     format='%Y%m%d',
-    #     options={
-    #         'locale': 'ja',
-    #         'dayViewHeaderFormat': 'YYYY年 MMMM',
-    #     },
-    #     attrs={'autofocus': 'autofocus'}
-    # ), label='日付')
+    # date = forms.CharField(label='日付')
+    date = forms.CharField(widget=datetimepicker.DatePickerInput(
+        format='%Y%m%d',
+        options={
+            'locale': 'ja',
+            'dayViewHeaderFormat': 'YYYY年 MMMM',
+        },
+        attrs={'autofocus': 'autofocus'}
+    ), label='日付')
     # classify = forms.ChoiceField(label='分類', widget=forms.Select, choices=classify_list)
     # person = forms.ChoiceField(label='対象者', widget=forms.Select, choices=person_list)
     classify_person = forms.ChoiceField(label='分類', required=False, widget=forms.Select)  # プルダウンの中身はinitで作成。

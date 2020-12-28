@@ -9,7 +9,7 @@ import mysite.util as base_util
 
 # 定数
 VIEW_LIST_URL = '/kakeibo/view_list/'
-DISPLAY_ROW_NUM = 10
+DISPLAY_ROW_NUM = 1000
 
 
 def view_list(request):
