@@ -3,13 +3,13 @@ from django.shortcuts import render, redirect
 
 # 独自ライブラリ
 from kakeibo.models import 収入支出明細
-from kakeibo.forms import DetailForm, InOutRadioForm
+from kakeibo.forms import DetailForm, ViewSearchForm
 import kakeibo.util.kakeibo_util as util
 import mysite.util as base_util
 
 # 定数
 VIEW_LIST_URL = '/kakeibo/view_list/'
-DISPLAY_ROW_NUM = 1000
+DISPLAY_ROW_NUM = 10
 
 
 def view_list(request):
@@ -21,15 +21,23 @@ def view_list(request):
 
     # 支出データ入力欄の初期値設定の初期化。
     detail_initial_dict = {}
-    inout_initial_dict = {}
+    # inout_initial_dict = {}
+    search_initial_dict = {}
 
     # セッションデータの初期化。自画面遷移でなければ初期化する。
     if ('HTTP_REFERER' not in request.META) or ('view_list' not in request.META['HTTP_REFERER']):
         request.session.clear()
 
     # セッションデータの取得
-    inout_kubun = request.session['inout_kubun'] if 'inout_kubun' in request.session else '1'
-    kotei_hendo_kubun = request.session['kotei_hendo_kubun'] if 'kotei_hendo_kubun' in request.session else '1'
+    search_date_start = request.session['search_date_start'] if 'search_date_start' in request.session else ''
+    search_date_end = request.session['search_date_end'] if 'search_date_end' in request.session else ''
+    search_inout_kubun = request.session['search_inout_kubun'] if 'search_inout_kubun' in request.session else '1'
+    search_kotei_hendo_kubun =\
+        request.session['search_kotei_hendo_kubun'] if 'search_kotei_hendo_kubun' in request.session else '1'
+    search_name = request.session['search_name'] if 'search_name' in request.session else ''
+    search_money_min = request.session['search_money_min'] if 'search_money_min' in request.session else None
+    search_money_max = request.session['search_money_max'] if 'search_money_max' in request.session else None
+    search_row_count = request.session['search_row_count'] if 'search_row_count' in request.session else DISPLAY_ROW_NUM
 
     # POST処理用の変数
     form_name = ''
@@ -42,23 +50,56 @@ def view_list(request):
             form_name = request_data.get('form_name')
 
     # 分類制御のラジオボタンの内容を取得
-    if form_name == 'change_inout':
-        inout_check_form_data = InOutRadioForm(request_data)
-        inout_check_form_data.is_valid()
-        cleaned_data = inout_check_form_data.cleaned_data
-        inout_radio = cleaned_data.get('check')
+    # if form_name == 'change_inout':
+    #     inout_check_form_data = InOutRadioForm(request_data)
+    #     inout_check_form_data.is_valid()
+    #     cleaned_data = inout_check_form_data.cleaned_data
+    #     inout_radio = cleaned_data.get('check')
+    #
+    #     # ラジオボタンの内容から値を取得
+    #     inout_radio_split = str(inout_radio).split('_')
+    #     inout_kubun = inout_radio_split[0]
+    #     kotei_hendo_kubun = inout_radio_split[1]
+
+    # 表示条件の内容を取得
+    if form_name == 'search':
+        view_search_from_data = ViewSearchForm(request_data)
+        view_search_from_data.is_valid()
+        cleaned_data = view_search_from_data.cleaned_data
+
+        search_date_start = cleaned_data.get('date_start')
+        search_date_end = cleaned_data.get('date_end')
+        search_check = cleaned_data.get('check')
+        search_name = cleaned_data.get('name')
+        search_money_min = cleaned_data.get('money_min')
+        search_money_max = cleaned_data.get('money_max')
 
         # ラジオボタンの内容から値を取得
-        inout_radio_split = str(inout_radio).split('_')
-        inout_kubun = inout_radio_split[0]
-        kotei_hendo_kubun = inout_radio_split[1]
+        inout_radio_split = str(search_check).split('_')
+        search_inout_kubun = inout_radio_split[0]
+        search_kotei_hendo_kubun = inout_radio_split[1]
+
+    # 表示の検索検索の初期値設定
+    search_date_start = search_date_start if search_date_start != '' else '00000000'
+    search_date_end = search_date_end if search_date_end != '' else '99999999'
+    search_inout_kubun = search_inout_kubun if search_inout_kubun != '' else '1'
+    search_kotei_hendo_kubun = search_kotei_hendo_kubun if search_kotei_hendo_kubun != '' else '1'
+    # search_name = search_name if search_name != '' else ''
+    search_money_min = search_money_min if search_money_min is not None else -999999999
+    search_money_max = search_money_max if search_money_max is not None else 999999999
 
     # 分類プルダウン取得用初期値の初期化
-    inout_value_dict = {'inout_kubun': inout_kubun, 'kotei_hendo_kubun': kotei_hendo_kubun}
+    inout_value_dict = {'inout_kubun': search_inout_kubun, 'kotei_hendo_kubun': search_kotei_hendo_kubun}
 
     # 支出明細の取得。支出データ一覧部の表示に利用する。
-    inout_details = 収入支出明細.objects.filter(削除フラグ='0', 収入支出分類コード__収入支出区分=inout_kubun,
-                                          収入支出分類コード__固定変動区分=kotei_hendo_kubun).order_by('id').reverse()
+    inout_details = 収入支出明細.objects.filter(
+        対象年月日__range=(search_date_start, search_date_end),
+        収入支出分類コード__収入支出区分=search_inout_kubun,
+        収入支出分類コード__固定変動区分=search_kotei_hendo_kubun,
+        項目名__contains=search_name,
+        金額__range=(search_money_min, search_money_max),
+        削除フラグ='0',
+    ).order_by('id').reverse()
     inout_detail_operation = util.InoutDetailTableOperation(inout_details)
 
     # リクエストメソッドがGETの場合。
@@ -125,21 +166,33 @@ def view_list(request):
     detail_form = DetailForm(initial=detail_initial_dict, inout_value_dict=inout_value_dict)
 
     # 画面表示する行数は固定
-    details = inout_detail_operation.get_some_records(DISPLAY_ROW_NUM)
+    details = inout_detail_operation.get_some_records(search_row_count)
 
     # 分類プルダウンを制御するラジオボタンのフォームを取得
-    inout_initial_dict['check'] = inout_kubun + '_' + kotei_hendo_kubun
-    inout_radio_form = InOutRadioForm(initial=inout_initial_dict)
+    # inout_initial_dict['check'] = search_inout_kubun + '_' + search_kotei_hendo_kubun
+    # inout_radio_form = InOutRadioForm(initial=inout_initial_dict)
+
+    # 一覧の表示条件の制御部のフォームを取得
+    search_initial_dict['check'] = search_inout_kubun + '_' + search_kotei_hendo_kubun
+    search_initial_dict['row_count'] = search_row_count
+    view_search_from = ViewSearchForm(initial=search_initial_dict)
 
     # セッションデータの登録
-    request.session['inout_kubun'] = inout_kubun
-    request.session['kotei_hendo_kubun'] = kotei_hendo_kubun
+    request.session['search_date_start'] = search_date_start
+    request.session['search_date_end'] = search_date_end
+    request.session['search_inout_kubun'] = search_inout_kubun
+    request.session['search_kotei_hendo_kubun'] = search_kotei_hendo_kubun
+    request.session['search_name'] = search_name
+    request.session['search_money_min'] = search_money_min
+    request.session['search_money_max'] = search_money_max
+    request.session['search_row_count'] = search_row_count
 
     # Templateに送るデータの作成。
     context = {
         'details': details,
         'detail_form': detail_form,
-        'inout_radio_form': inout_radio_form,
+        # 'inout_radio_form': inout_radio_form,
+        'view_search_from': view_search_from,
     }
 
     # 支出データ一覧画面の表示。"context"の内容をもとに"view_list.html"が表示される。

@@ -6,6 +6,7 @@ import kakeibo.util.kakeibo_util as util
 
 # 定数
 # 「"収入支出区分_固定変動区分", 表示名称」で収支選択用のリスト作成
+# アンダーバーを挟んで左が収入支出区分、右が固定変動区分
 CHOICE = [
     ('0_0', '収入'),
     ('1_0', '支出（固定費）'),
@@ -155,3 +156,37 @@ class CardForm(forms.Form):
 
 
 CardFormSet = forms.formset_factory(CardForm, extra=0)
+
+
+class ViewSearchForm(forms.Form):
+    """
+    一覧画面の表示条件用のフォーム
+    """
+    date_start = forms.CharField(label='開始日', max_length=8, required=False,
+                                 widget=datetimepicker.DatePickerInput(
+                                    format='%Y%m%d',
+                                    options={
+                                        'locale': 'ja',
+                                        'dayViewHeaderFormat': 'YYYY年 MMMM',
+                                    },
+                                    attrs={'showOn': 'none'},
+                                 )
+                                 )
+    date_end = forms.CharField(label='終了日', initial='', max_length=8, required=False,
+                               widget=datetimepicker.DatePickerInput(
+                                   format='%Y%m%d',
+                                   options={
+                                       'locale': 'ja',
+                                       'dayViewHeaderFormat': 'YYYY年 MMMM',
+                                   },
+                               )
+                               )
+    check = forms.ChoiceField(label='収支区分', choices=CHOICE, required=True,
+                              widget=forms.RadioSelect(attrs={"id": 'check', })
+                              )
+    name = forms.CharField(label='項目名', max_length=100, required=False)
+    money_min = forms.IntegerField(label='下限額', required=False)
+    money_max = forms.IntegerField(label='上限額', required=False)
+    row_count = forms.IntegerField(label='表示行数', required=True)
+
+
