@@ -8,15 +8,12 @@
         <input type="hidden" name="form_name" value="search">
 
         <div class="float-right">
-            <!--<b>{{ inout_radio_form.check.label }}</b> :-->
-            <!--{% for check in inout_radio_form.check %}-->
-            <!--{{ check }}-->
-            <!--{% endfor %}-->
 
             <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#modal1" name="condition">
                 表示条件
             </button>
 
+            <!-- 表示条件はモーダルウィンドウにする。「表示条件」ボタンを押下すると以下の部分が表示される。  -->
             <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -28,7 +25,9 @@
                   </div>
                   <div class="modal-body">
                     <div class="form-group">
-                      <label for="date" class="col-form-label"><b>期間:</b></label>
+                      <!-- labelタグにfor属性をつけるとidが存在しないエラー（HTML上ではidが見えないため）が表示されるので一旦なくす。以下同様。 -->
+                      <!--<label for="id_date" class="col-form-label"><b>期間:</b></label>-->
+                      <label class="col-form-label"><b>期間:</b></label>
                       <table border="0">
                         <tr class="datetimepicker">
                           <td>{{ view_search_from.date_start }}</td>
@@ -38,7 +37,8 @@
                       </table>
                     </div>
                     <div class="form-group">
-                      <label for="check" class="col-form-label"><b>{{ view_search_from.check.label }}:</b></label>
+                      <!--<label for="id_check" class="col-form-label"><b>{{ view_search_from.check.label }}:</b></label>-->
+                      <label class="col-form-label"><b>{{ view_search_from.check.label }}:</b></label>
                       <div>
                         {% for check in view_search_from.check %}
                         {{ check }}
@@ -46,11 +46,13 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <label for="name" class="col-form-label"><b>{{ view_search_from.name.label }}:</b></label>
+                      <!--<label for="id_name" class="col-form-label"><b>{{ view_search_from.name.label }}:</b></label>-->
+                      <label class="col-form-label"><b>{{ view_search_from.name.label }}:</b></label>
                       <div>{{ view_search_from.name }}</div>
                     </div>
                     <div class="form-group">
-                      <label for="money" class="col-form-label"><b>金額:</b></label>
+                      <!--<label for="id_name" class="col-form-label"><b>{{ view_search_from.name.label }}:</b></label>-->
+                      <label class="col-form-label"><b>{{ view_search_from.name.label }}:</b></label>
                       <table border="0">
                         <tr>
                           <td>{{ view_search_from.money_min }}</td>
@@ -60,7 +62,8 @@
                       </table>
                     </div>
                     <div class="form-group">
-                      <label for="row_count" class="col-form-label"><b>{{ view_search_from.row_count.label }}:</b></label>
+                      <!--<label for="id_row_count" class="col-form-label"><b>{{ view_search_from.row_count.label }}:</b></label>-->
+                      <label class="col-form-label"><b>{{ view_search_from.row_count.label }}:</b></label>
                       <div>{{ view_search_from.row_count }}</div>
                     </div>
                   </div>
@@ -77,15 +80,6 @@
     <form action="{% url 'Kakeibo:view_list' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="form_name" value="submit_data">
-        <!-- {{ form.as_table }} -->
-        <!--
-        {% for field in form %}
-            <div class="row">
-                <div class="col-md-6">{{ field.label_tag }}</div>
-                <div class="col-md-6">{{ field }}</div>
-            </div>
-        {% endfor %}
-        -->
         <table class="table">
             <tr class="datetimepicker">
                 <td>

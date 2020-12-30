@@ -1,5 +1,5 @@
 from django import forms
-from .models import 収入支出分類マスタ, 対象者マスタ
+# from models import 収入支出分類マスタ, 対象者マスタ
 # from django.contrib.admin.widgets import AdminDateWidget
 import bootstrap_datepicker_plus as datetimepicker
 import kakeibo.util.kakeibo_util as util
@@ -169,7 +169,6 @@ class ViewSearchForm(forms.Form):
                                         'locale': 'ja',
                                         'dayViewHeaderFormat': 'YYYY年 MMMM',
                                     },
-                                    attrs={'showOn': 'none'},
                                  )
                                  )
     date_end = forms.CharField(label='終了日', initial='', max_length=8, required=False,
@@ -188,5 +187,3 @@ class ViewSearchForm(forms.Form):
     money_min = forms.IntegerField(label='下限額', required=False)
     money_max = forms.IntegerField(label='上限額', required=False)
     row_count = forms.IntegerField(label='表示行数', required=True)
-
-
