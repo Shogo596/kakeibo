@@ -24,11 +24,8 @@ class Date:
         # 引数「日付」の文字長を取得
         date_len = len(date)
 
-        # 引数「日付」を調整
-        if date_len == 4:
-            date += '0401'
-        if date_len == 6:
-            date += '01'
+        # 8桁日付に合わせる。
+        date = Date._trans_date_to_len8(date)
 
         # 日付計算
         dt_date = datetime.strptime(date, '%Y%m%d')
@@ -42,6 +39,28 @@ class Date:
             result = dt_date.strftime('%Y%m')
         if date_len == 8:
             result = dt_date.strftime('%Y%m%d')
+
+        return result
+
+    @staticmethod
+    def trans_date(date, format_):
+        """
+        日付変換（引数が文字列日付）
+        :param date: 日付（文字列。4桁 or 6桁 or 8桁のみ。）
+        :param format_: 変換形式
+        :return:
+        """
+
+        # 8桁日付に合わせる。
+        date = Date._trans_date_to_len8(date)
+
+        # 日付型に変換
+        dt_date = datetime.strptime(date, '%Y%m%d')
+
+        # formatの形に変換
+        # strftimeはC言語のライブラリを使っているらしく日本語が使えないの、無理やりencode/decodeをしている。
+        # https://ja.stackoverflow.com/questions/44597/windows%E4%B8%8A%E3%81%AEpython%E3%81%AEdatetime-strftime%E3%81%A7%E6%97%A5%E6%9C%AC%E8%AA%9E%E3%82%92%E4%BD%BF%E3%81%86%E3%81%A8%E3%82%A8%E3%83%A9%E3%83%BC%E3%81%AB%E3%81%AA%E3%82%8B
+        result = dt_date.strftime(format_.encode('unicode-escape').decode()).encode().decode("unicode-escape")
 
         return result
 
@@ -66,6 +85,25 @@ class Date:
             result = STR.insert_str(wk, '/', 4)
 
         return result
+
+    @staticmethod
+    def _trans_date_to_len8(date):
+        """
+        文字列日付を8桁にする。
+        :param date: 日付（文字列。4桁 or 6桁 or 8桁のみ。）
+        :return: 8桁にした日付
+        """
+
+        # 引数「日付」の文字長を取得
+        date_len = len(date)
+
+        # 引数「日付」を調整
+        if date_len == 4:
+            date += '0401'
+        if date_len == 6:
+            date += '01'
+
+        return date
 
 
 ############################################################################################

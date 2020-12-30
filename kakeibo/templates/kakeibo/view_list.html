@@ -1,5 +1,11 @@
 {% extends 'kakeibo/base.html' %}
 
+<!-- 数値の表示形式変換のロード部分 -->
+{% load humanize %}
+
+<!-- カスタムフィルターのロード部分 -->
+{% load custom_filters %}
+
 {% block content %}
     <h4>日別支出登録画面</h4>
     <!-- 収支プルダウン制御部 -->
@@ -125,10 +131,10 @@
         </tr>
         {% for detail in details %}
         <tr>
-            <td>{{ detail.対象年月日 }}</td>
+            <td>{{ detail.対象年月日 | trans_date:"%Y年%m月%d日" }}</td>
             <td>{{ detail.収入支出分類コード.収入支出分類名 }}</td>
             <td>{{ detail.項目名 }}</td>
-            <td>{{ detail.金額 }}</td>
+            <td>{{ detail.金額 | intcomma }}円</td>
             <td>
                 <form action="{% url 'Kakeibo:view_list' %}" method="post">
                     {% csrf_token %}

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'fa',
     'bootstrap_datepicker_plus',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -81,10 +82,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # MySQLの設定部分。以下の値は基本的に固定値。
 DATABASES = {
-    #'default': {
+    # 'default': {
     #   'ENGINE': 'django.db.backends.sqlite3',
     #   'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    #}
+    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mysite',
@@ -208,7 +209,7 @@ BOOTSTRAP4 = {
     'success_css_class': 'is-valid',
 
     # Renderers (only set these if you have studied the source and understand the inner workings)
-    'formset_renderers':{
+    'formset_renderers': {
         'default': 'bootstrap4.renderers.FormsetRenderer',
     },
     'form_renderers': {
@@ -219,3 +220,5 @@ BOOTSTRAP4 = {
         'inline': 'bootstrap4.renderers.InlineFieldRenderer',
     },
 }
+
+NUMBER_GROUPING = 3
