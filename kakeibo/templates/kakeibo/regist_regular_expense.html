@@ -25,6 +25,8 @@
         <!-- formset利用時の固有記載 -->
         {{ regular_data_list.management_form }}
 
+        {% comment "ほんとは以下のコードが柔軟性があっていいけど、ユーザからの要望で表示形式を変える" %}
+        <!--
         <table class="table">
             <tr>
                 <th>分類</th>
@@ -42,6 +44,298 @@
                     {{ form.money_disabled }}
                 </tr>
             {% endfor %}
+        </table>
+        -->
+        {% endcomment %}
+
+        <!-- 収入テーブル -->
+        <table class="table table-bordered table-sm">
+            <caption>【収入】</caption>
+
+            <!-- 収入（奨悟） -->
+            <tr class="table-primary">
+                <td><b>{{ regular_data_list.0.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.2.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.4.form_name.value }}</b></td>
+            </tr>
+            <tr>
+                <td>
+                    {% with regular_data=regular_data_list.0 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.2 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.4 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+            </tr>
+
+            <!-- 収入（凪） -->
+            <tr class="table-primary">
+                <td><b>{{ regular_data_list.1.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.3.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.5.form_name.value }}</b></td>
+            </tr>
+            <tr>
+                <td>
+                    {% with regular_data=regular_data_list.1 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.3 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.5 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+            </tr>
+        </table>
+
+        <!-- 支出テーブル -->
+        <table class="table table-bordered table-sm">
+            <caption>【支出】</caption>
+
+            <!-- 支出1 -->
+            <tr class="table-primary">
+                <td><b>{{ regular_data_list.6.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.7.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.8.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.9.form_name.value }}</b></td>
+            </tr>
+            <tr>
+                <td>
+                    {% with regular_data=regular_data_list.6 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.7 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.8 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.9 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+            </tr>
+
+            <!-- 支出2 -->
+            <tr class="table-primary">
+                <td><b>{{ regular_data_list.10.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.11.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.12.form_name.value }}</b></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    {% with regular_data=regular_data_list.10 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.11 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.12 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+
+            <!-- 支出3 -->
+            <tr class="table-primary">
+                <td><b>{{ regular_data_list.13.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.14.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.18.form_name.value }}</b></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    {% with regular_data=regular_data_list.13 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.14 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.18 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+
+            <!-- 支出4 -->
+            <tr class="table-primary">
+                <td><b>{{ regular_data_list.15.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.16.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.17.form_name.value }}</b></td>
+                <td><b>{{ regular_data_list.19.form_name.value }}</b></td>
+            </tr>
+            <tr>
+                <td>
+                    {% with regular_data=regular_data_list.15 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.16 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.17 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% with regular_data=regular_data_list.19 %}
+                    {{ regular_data.money }}
+                    {{ regular_data.row_id }}
+                    {{ regular_data.date }}
+                    {{ regular_data.classify_code }}
+                    {{ regular_data.person_code }}
+                    {{ regular_data.money_define }}
+                    {{ regular_data.money_disabled }}
+                    {% endwith %}
+                </td>
+            </tr>
         </table>
 
         <div class="pull-right">

@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5a69601a-8c08-4ee5-ae10-e9053f240eaa" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/kakeibo/templates/kakeibo/view_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/kakeibo/templates/kakeibo/view_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysite/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysite/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kakeibo/static/css/kakeibo.css" beforeDir="false" afterPath="$PROJECT_DIR$/kakeibo/static/css/kakeibo.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kakeibo/templates/kakeibo/regist_regular_expense.html" beforeDir="false" afterPath="$PROJECT_DIR$/kakeibo/templates/kakeibo/regist_regular_expense.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,69 +17,36 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/kakeibo/views/view_list.py">
+        <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/regist_regular_expense.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3077">
-              <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/view_list.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19">
-              <caret line="136" column="43" selection-start-line="136" selection-start-column="43" selection-end-line="136" selection-end-column="43" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mysite/settings.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="131">
-              <caret line="87" column="6" selection-start-line="87" selection-start-column="6" selection-end-line="87" selection-end-column="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/kakeibo/forms.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="4" selection-start-line="4" selection-end-line="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/base.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1700">
-              <caret line="100" column="31" lean-forward="true" selection-start-line="100" selection-start-column="31" selection-end-line="100" selection-end-column="31" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/kakeibo/templatetags/custom_filters.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" selection-start-line="8" selection-end-line="8" />
+            <state relative-caret-position="-3144">
+              <caret line="139" column="15" selection-start-line="139" selection-start-column="15" selection-end-line="139" selection-end-column="15" />
               <folding>
-                <element signature="e#0#27#0" expanded="true" />
+                <element signature="e#7906#7912#1" expanded="true" />
+                <element signature="e#9434#9440#1" expanded="true" />
+                <element signature="e#9774#9780#1" expanded="true" />
+                <element signature="e#11302#11308#1" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mysite/util.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/kakeibo/static/css/kakeibo.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="62" column="41" selection-start-line="62" selection-start-column="41" selection-end-line="62" selection-end-column="41" />
+            <state relative-caret-position="331">
+              <caret line="33" column="35" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kakeibo/views/regist_regular_expense.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-944">
+              <caret line="85" column="37" lean-forward="true" selection-start-line="85" selection-start-column="37" selection-end-line="85" selection-end-column="37" />
               <folding>
-                <element signature="e#0#34#0" expanded="true" />
+                <element signature="e#10#45#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -98,7 +64,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>RegularFormData</find>
       <find>id</find>
       <find>update</find>
       <find>Date</find>
@@ -128,6 +93,7 @@
       <find>showOn</find>
       <find>日付</find>
       <find>_namedtuple_fetch</find>
+      <find>table-active</find>
     </findStrings>
     <replaceStrings>
       <replace>csvfileCover</replace>
@@ -140,6 +106,7 @@
       <replace>display_period_total</replace>
       <replace>arrData</replace>
       <replace>line_chart_data</replace>
+      <replace>table-primary</replace>
     </replaceStrings>
     <dirStrings>
       <dir>C:\Users\admin\Documents\python\myvenv\kakeibo</dir>
@@ -180,7 +147,6 @@
         <option value="$PROJECT_DIR$/kakeibo/static/js/pie_chart.js" />
         <option value="$PROJECT_DIR$/kakeibo/templates/kakeibo/display_classify_total.html" />
         <option value="$PROJECT_DIR$/kakeibo/views/display_classify_total.py" />
-        <option value="$PROJECT_DIR$/kakeibo/static/css/kakeibo.css" />
         <option value="$PROJECT_DIR$/kakeibo/templates/kakeibo/display_period_total.html" />
         <option value="$PROJECT_DIR$/kakeibo/util/credit_card.py" />
         <option value="$PROJECT_DIR$/kakeibo/views/display_period_total.py" />
@@ -193,7 +159,6 @@
         <option value="$PROJECT_DIR$/kakeibo/urls.py" />
         <option value="$PROJECT_DIR$/kakeibo/templates/kakeibo/display_classify_period_total.html" />
         <option value="$PROJECT_DIR$/kakeibo/templates/kakeibo/credit_card_regist.html" />
-        <option value="$PROJECT_DIR$/kakeibo/templates/kakeibo/regist_regular_expense.html" />
         <option value="$PROJECT_DIR$/kakeibo/views/regist_regular_expense.py" />
         <option value="$PROJECT_DIR$/kakeibo/models.py" />
         <option value="$PROJECT_DIR$/kakeibo/util/kakeibo_util.py" />
@@ -204,6 +169,8 @@
         <option value="$PROJECT_DIR$/mysite/util.py" />
         <option value="$PROJECT_DIR$/mysite/settings.py" />
         <option value="$PROJECT_DIR$/kakeibo/templates/kakeibo/view_list.html" />
+        <option value="$PROJECT_DIR$/kakeibo/templates/kakeibo/regist_regular_expense.html" />
+        <option value="$PROJECT_DIR$/kakeibo/static/css/kakeibo.css" />
       </list>
     </option>
   </component>
@@ -421,13 +388,13 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4988662" visible="true" weight="0.18824404" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4988662" visible="true" weight="0.18824404" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.5011338" side_tool="true" weight="0.1845238" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3289689" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49925596" weight="0.22749591" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49925596" visible="true" weight="0.2782324" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49925596" visible="true" weight="0.2782324" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3289689" />
@@ -744,16 +711,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kakeibo/views/regist_regular_expense.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="267">
-          <caret line="85" column="37" lean-forward="true" selection-start-line="85" selection-start-column="37" selection-end-line="85" selection-end-column="37" />
-          <folding>
-            <element signature="e#10#45#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/credit_card_regist.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1209">
@@ -766,13 +723,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/kakeibo/tests.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kakeibo/static/css/kakeibo.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" selection-start-line="22" selection-end-line="22" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/display_classify_total.html">
       <provider selected="true" editor-type-id="text-editor">
@@ -825,13 +775,6 @@
     <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/index.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/regist_regular_expense.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" column="34" selection-start-line="36" selection-start-column="34" selection-end-line="36" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/kakeibo/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="53">
@@ -876,13 +819,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mysite/util.py">
+    <entry file="file://$PROJECT_DIR$/kakeibo/views/view_list.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="62" column="41" selection-start-line="62" selection-start-column="41" selection-end-line="62" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#34#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-3077">
+          <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/view_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="129" column="23" lean-forward="true" selection-start-line="129" selection-start-column="23" selection-end-line="129" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mysite/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="87" column="6" selection-start-line="87" selection-start-column="6" selection-end-line="87" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kakeibo/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1700">
+          <caret line="100" column="31" lean-forward="true" selection-start-line="100" selection-start-column="31" selection-end-line="100" selection-end-column="31" />
         </state>
       </provider>
     </entry>
@@ -896,38 +864,43 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/base.html">
+    <entry file="file://$PROJECT_DIR$/mysite/util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1700">
-          <caret line="100" column="31" lean-forward="true" selection-start-line="100" selection-start-column="31" selection-end-line="100" selection-end-column="31" />
+        <state relative-caret-position="308">
+          <caret line="62" column="41" selection-start-line="62" selection-start-column="41" selection-end-line="62" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#34#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kakeibo/views/view_list.py">
+    <entry file="file://$PROJECT_DIR$/kakeibo/views/regist_regular_expense.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3077">
-          <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
+        <state relative-caret-position="-944">
+          <caret line="85" column="37" lean-forward="true" selection-start-line="85" selection-start-column="37" selection-end-line="85" selection-end-column="37" />
+          <folding>
+            <element signature="e#10#45#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kakeibo/forms.py">
+    <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/regist_regular_expense.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        <state relative-caret-position="-3144">
+          <caret line="139" column="15" selection-start-line="139" selection-start-column="15" selection-end-line="139" selection-end-column="15" />
+          <folding>
+            <element signature="e#7906#7912#1" expanded="true" />
+            <element signature="e#9434#9440#1" expanded="true" />
+            <element signature="e#9774#9780#1" expanded="true" />
+            <element signature="e#11302#11308#1" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mysite/settings.py">
+    <entry file="file://$PROJECT_DIR$/kakeibo/static/css/kakeibo.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="87" column="6" selection-start-line="87" selection-start-column="6" selection-end-line="87" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kakeibo/templates/kakeibo/view_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="136" column="43" selection-start-line="136" selection-start-column="43" selection-end-line="136" selection-end-column="43" />
+        <state relative-caret-position="331">
+          <caret line="33" column="35" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
         </state>
       </provider>
     </entry>

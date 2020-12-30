@@ -30,3 +30,8 @@ h1, h2, h3, h4, h5, h6 {
     list-style-type: none;
     padding: 1px 0;
 }
+
+/* tableのタイトル（caption）の表示場所を上に変更する。 */
+caption {
+	caption-side: top;
+}
