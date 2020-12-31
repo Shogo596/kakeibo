@@ -168,6 +168,9 @@ def view_list(request):
     # 画面表示する行数は固定
     details = inout_detail_operation.get_some_records(search_row_count)
 
+    # 表示されている行の合計金額
+    sum_price = get_sum_price(details)
+
     # 分類プルダウンを制御するラジオボタンのフォームを取得
     # inout_initial_dict['check'] = search_inout_kubun + '_' + search_kotei_hendo_kubun
     # inout_radio_form = InOutRadioForm(initial=inout_initial_dict)
@@ -193,6 +196,7 @@ def view_list(request):
         'detail_form': detail_form,
         # 'inout_radio_form': inout_radio_form,
         'view_search_from': view_search_from,
+        'sum_price': sum_price
     }
 
     # 支出データ一覧画面の表示。"context"の内容をもとに"view_list.html"が表示される。
@@ -231,3 +235,11 @@ def get_row_value(inout_detail_operation, row_id):
         row_value['money'] = row.金額
 
     return row_value
+
+
+def get_sum_price(details):
+    sum_price = 0
+    for detail in details:
+        sum_price += detail.金額
+
+    return sum_price
