@@ -121,13 +121,13 @@
 
 
     <!-- 支出データ一覧表示部 -->
-    <table class="table">
+    <table class="table w-75">
         <tr>
             <th>日付</th>
             <th>分類</th>
             <th>項目名</th>
             <th>
-                <a href="" onclick="return false;" data-toggle="tooltip" title="合計：{{ sum_price }}円">
+                <a href="" onclick="return false;" data-toggle="tooltip" title="合計：{{ sum_price | intcomma }}円">
                     金額
                 </a>
             </th>

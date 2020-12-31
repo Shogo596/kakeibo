@@ -113,7 +113,7 @@ class YMForm(forms.Form):
         (month, '１月'),
         (year, '１年'),
     ]
-    yyyymm = forms.CharField(label='年月', max_length=6, widget=forms.TextInput(attrs={'size': 6}))
+    yyyymm = forms.CharField(label='年月', min_length=6, max_length=6, widget=forms.TextInput(attrs={'size': 6}))
     period = forms.IntegerField(label='期間', widget=forms.TextInput(attrs={'size': 2}))
     interval = forms.ChoiceField(label='分類', widget=forms.Select, choices=month_or_year_list)
 

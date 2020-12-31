@@ -1,5 +1,11 @@
 {% extends 'kakeibo/base.html' %}
 
+<!-- 数値の表示形式変換のロード部分 -->
+{% load humanize %}
+
+<!-- カスタムフィルターのロード部分 -->
+{% load custom_filters %}
+
 {% block content %}
     <h4>カード支出登録画面</h4>
     <!-- ページ移動部 -->
@@ -51,7 +57,7 @@
         <!-- formset利用時の固有記載 -->
         {{ card_formset.management_form }}
 
-        <table class="table">
+        <table class="table w-75">
             <tr>
                 <th>日付</th>
                 <th>店名</th>
@@ -62,9 +68,9 @@
             </tr>
             {% for form in card_formset %}
             <tr>
-                <td>{{ form.use_date.value }}</td>
+                <td>{{ form.use_date.value | trans_date:"%Y/%m/%d" }}</td>
                 <td>{{ form.shop_name.value }}</td>
-                <td>{{ form.money.value }}</td>
+                <td>{{ form.money.value | intcomma }}円</td>
                 <td>{{ form.classify_person }}</td>
                 <td>{{ form.remarks }}</td>
                 <td>{{ form.delete }}</td>

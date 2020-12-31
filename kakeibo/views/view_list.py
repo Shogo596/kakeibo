@@ -73,6 +73,7 @@ def view_list(request):
         search_name = cleaned_data.get('name')
         search_money_min = cleaned_data.get('money_min')
         search_money_max = cleaned_data.get('money_max')
+        search_row_count = cleaned_data.get('row_count')
 
         # ラジオボタンの内容から値を取得
         inout_radio_split = str(search_check).split('_')
