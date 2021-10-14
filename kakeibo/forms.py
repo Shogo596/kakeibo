@@ -162,6 +162,10 @@ class ViewSearchForm(forms.Form):
     """
     一覧画面の表示条件用のフォーム
     """
+
+    # 収入支出分類のコンボボックスを取得する。
+    classify_person_combobox = util.ClassifyPersonOpe.get_classify_person_combobox('', '', True)
+
     date_start = forms.CharField(label='開始日', max_length=8, required=False,
                                  widget=datetimepicker.DatePickerInput(
                                     format='%Y%m%d',
@@ -183,6 +187,8 @@ class ViewSearchForm(forms.Form):
     check = forms.ChoiceField(label='収支区分', choices=CHOICE, required=True,
                               widget=forms.RadioSelect(attrs={"id": 'check', })
                               )
+    classify_person = forms.ChoiceField(label='支出分類',
+                                        required=False, widget=forms.Select, choices=classify_person_combobox)
     name = forms.CharField(label='項目名', max_length=100, required=False)
     money_min = forms.IntegerField(label='下限額', required=False)
     money_max = forms.IntegerField(label='上限額', required=False)

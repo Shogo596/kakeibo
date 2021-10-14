@@ -24,6 +24,7 @@ class ClassifyPersonOpe:
     """
     収入支出分類と対象者に関わる操作
     """
+
     @staticmethod
     def get_classify_person_combobox(inout_kubun, kotei_hendo_kubun, is_blank):
         """
@@ -71,7 +72,7 @@ class ClassifyPersonOpe:
             classify_records = classify_records.filter(固定変動区分=kotei_hendo_kubun)
 
         # 変動費から表示するように逆順にする。
-        classify_records = classify_records.order_by('固定変動区分', '収入支出区分').reverse()
+        classify_records = classify_records.order_by('-固定変動区分', '-収入支出区分', '表示順序')
 
         for classify_row in classify_records:
             # 世帯全員以外の対象者を取得する。
@@ -96,6 +97,7 @@ class ClassifyPersonData:
     """
     収入支出分類と対象者をペアで格納するクラス
     """
+
     def __init__(self, classify, person):
         self.classify = classify
         self.person = person
@@ -125,6 +127,7 @@ class TableOperationBase:
     """
     テーブル操作の基底クラス
     """
+
     def __init__(self, master: QuerySet):
         self._records = master
 
@@ -171,6 +174,7 @@ class InoutDetailTableOperation(TableOperationBase):
     """
     収入支出明細テーブルの操作クラス
     """
+
     def __init__(self, inout_detail_master: QuerySet):
         super().__init__(inout_detail_master)
         self.__inout_detail_records = self._records
@@ -268,6 +272,7 @@ class CardDetailTableOperation(TableOperationBase):
     """
     カード支出明細テーブルの操作クラス
     """
+
     def __init__(self, card_detail_master: QuerySet):
         super().__init__(card_detail_master)
         self.__card_detail_records = self._records
