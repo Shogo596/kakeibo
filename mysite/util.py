@@ -206,6 +206,20 @@ class STR:
         """
         return '{0}{1}{2}'.format(base_str[:point], ins_str, base_str[point:])
 
+    @staticmethod
+    def convert_comma(base):
+        """
+        引数の数値をカンマ区切りの値に変換する。
+        :param base:カンマ区切りにする数値
+        :return:カンマ区切り後の値
+        """
+
+        # もしint以外であればintに変換する。
+        var = base if type(base) is int else int(base)
+
+        # カンマ区切りにする。
+        return '{:,}'.format(var)
+
 
 ############################################################################################
 # FormSet操作

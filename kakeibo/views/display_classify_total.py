@@ -64,7 +64,8 @@ def display_classify_total(request):
 
     # 画面表示データの作成
     pie_chart_data = PieChartData()
-    pie_chart_data.title = '収支内訳'
+    pie_chart_data.title = '収支内訳（合計金額：'\
+                           + base_util.STR.convert_comma(sum(int(row['合計金額']) for row in display_records)) + '円）'
     pie_chart_data.labels = [row['収入支出分類名'] for row in display_records]
     pie_chart_data.data = [int(row['合計金額']) for row in display_records]
 
