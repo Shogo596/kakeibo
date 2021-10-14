@@ -299,6 +299,9 @@ class CardDetailTableOperation(TableOperationBase):
         for card_data in card_data_list.get_data_list():
             card_data: cc.CreditCardData = card_data
 
+            # ETCカード利用の場合など利用日が空白（金額も空白）の場合は取り込み対象外とする。
+            if card_data.use_date == '' and card_data.use_money == 0: continue
+
             ins_upd_data = {}
             if card_data.classify_code != '':
                 ins_upd_data['収入支出分類コード'] = \

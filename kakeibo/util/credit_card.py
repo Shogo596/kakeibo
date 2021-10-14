@@ -58,9 +58,9 @@ class RakutenCardDataList(CreditCardDataList):
             card_data.shop_name = str(line['利用店名・商品名'])
             card_data.person = str(line['利用者'])
             card_data.payment_method = str(line['支払方法'])
-            card_data.use_money = int(line['利用金額'])
-            card_data.commission = int(line['支払手数料'])
-            card_data.all_money = int(line['支払総額'])
+            card_data.use_money = int(line['利用金額'] or "0")
+            card_data.commission = int(line['支払手数料'] or "0")
+            card_data.all_money = int(line['支払総額'] or "0")
             self.set_row(card_data)
 
 
